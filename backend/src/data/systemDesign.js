@@ -1,0 +1,178 @@
+const systemDesignTopics = [
+  {
+    id: 1,
+    title: "Scalability & Load Balancing",
+    category: "HLD",
+    subcategory: "Fundamentals",
+    difficulty: "Beginner",
+    summary: "How systems handle growing traffic by distributing load across multiple servers.",
+    concepts: [
+      "Vertical vs Horizontal Scaling",
+      "Load Balancer Algorithms",
+      "Stateless vs Stateful Servers",
+      "Health Checks & Automatic Failover",
+      "Layer 4 vs Layer 7 Load Balancing",
+    ],
+    content: {
+      problem: `Imagine PlacePrep gets 10,000 students hitting it the night before campus placements. Your single server has limits — CPU, RAM, network bandwidth. Cross those limits and the server slows down, then crashes. Every student gets a blank screen the night before their interview. That is the problem scalability solves.`,
+
+      sections: [
+        {
+          type: "comparison",
+          heading: "Vertical vs Horizontal Scaling",
+          left: {
+            title: "Vertical Scaling",
+            subtitle: "Scale Up",
+            color: "blue",
+            description: "Make the one server bigger and more powerful.",
+            pros: ["Simple — no code changes needed", "Works well at small scale"],
+            cons: [
+              "Physical limit — can't scale forever",
+              "Very expensive at high end",
+              "Single point of failure",
+              "Requires downtime to upgrade",
+            ],
+            when: "Early stage startups, quick fixes",
+          },
+          right: {
+            title: "Horizontal Scaling",
+            subtitle: "Scale Out",
+            color: "emerald",
+            description: "Add more servers and distribute traffic across them.",
+            pros: [
+              "No single point of failure",
+              "Theoretically unlimited scale",
+              "Cheaper at scale",
+              "No downtime to add servers",
+            ],
+            cons: [
+              "More complex architecture",
+              "Need a load balancer",
+              "Session management is harder",
+            ],
+            when: "Production systems, high traffic apps",
+          },
+        },
+        {
+          type: "concept",
+          heading: "What is a Load Balancer",
+          body: "A load balancer sits in front of all your servers. Every incoming request hits the load balancer first — it then decides which server should handle it. The client never talks to a server directly. This gives you full control over traffic distribution, failover, and scaling.",
+          analogy: {
+            emoji: "🏦",
+            title: "Bank Receptionist",
+            text: "You walk into a bank with 5 counters. A receptionist at the door says — Counter 3 is free, please go there. You don't choose the counter. She decides based on who is busy. That receptionist is the load balancer.",
+          },
+          takeaway: "Load balancers are the traffic cops of your backend — nothing gets through without their direction.",
+        },
+        {
+          type: "algorithm",
+          heading: "Round Robin",
+          body: "Requests are distributed to servers in a fixed rotating order. Server 1 gets request 1, Server 2 gets request 2, Server 3 gets request 3, then back to Server 1.",
+          flow: [
+            { label: "Request 1", target: "Server 1", color: "#7c3aed" },
+            { label: "Request 2", target: "Server 2", color: "#2563eb" },
+            { label: "Request 3", target: "Server 3", color: "#059669" },
+            { label: "Request 4", target: "Server 1 ↩", color: "#7c3aed" },
+          ],
+          analogy: {
+            emoji: "🃏",
+            title: "Dealing Cards",
+            text: "Dealing cards at a table — one card per player, in order, cycling back to the first player. Simple and predictable.",
+          },
+          pros: "Simple to implement, works well when all requests have similar processing time.",
+          cons: "Ignores actual server load. A heavy request on Server 1 means Server 1 is stuck while Server 2 and 3 are idle.",
+          takeaway: "Use Round Robin only when your requests are roughly equal in cost.",
+        },
+        {
+          type: "algorithm",
+          heading: "Least Connections",
+          body: "The load balancer tracks how many active connections each server currently has. New requests always go to the server with the fewest active connections right now.",
+          flow: [
+            { label: "Server 1", target: "8 connections", color: "#dc2626" },
+            { label: "Server 2", target: "2 connections ✓", color: "#059669" },
+            { label: "Server 3", target: "5 connections", color: "#d97706" },
+          ],
+          analogy: {
+            emoji: "🛒",
+            title: "Supermarket Queue",
+            text: "You walk into a supermarket with 3 checkout lanes. You look at all three and join the one with the fewest people. Least Connections does exactly this — automatically, for every request.",
+          },
+          pros: "Accounts for actual server load. Much smarter than Round Robin for unequal requests.",
+          cons: "Slightly more complex to implement. Requires the load balancer to track connection counts.",
+          takeaway: "Default choice for most production systems. Smarter than Round Robin with minimal extra cost.",
+        },
+        {
+          type: "algorithm",
+          heading: "IP Hashing",
+          body: "The user's IP address is hashed to a number, which maps to a specific server. The same IP always gets routed to the same server — every single time.",
+          flow: [
+            { label: "IP: 192.168.1.1", target: "→ Always Server 1", color: "#7c3aed" },
+            { label: "IP: 192.168.1.2", target: "→ Always Server 2", color: "#2563eb" },
+            { label: "IP: 192.168.1.3", target: "→ Always Server 3", color: "#059669" },
+          ],
+          analogy: {
+            emoji: "🏠",
+            title: "Assigned Seating",
+            text: "Like a cinema with assigned seats. Your ticket always gets you the same seat. You don't choose — it's determined by your ticket number (your IP).",
+          },
+          pros: "Solves session persistence — same user always hits the same server where their session lives.",
+          cons: "If that server goes down, the user loses their session. Uneven distribution if some IPs generate more traffic.",
+          takeaway: "Only use IP Hashing if you have stateful servers and can't move to Redis yet. Stateless + Redis is always the better long-term solution.",
+        },
+        {
+          type: "concept",
+          heading: "Stateless vs Stateful Servers",
+          body: "A stateful server stores session data locally on itself. This ties a user to one specific server — bad for scaling. A stateless server stores session data in a shared external store like Redis. Any server can handle any request because they all read from the same central place.",
+          analogy: {
+            emoji: "📒",
+            title: "Bank Teller Notebooks",
+            text: "Stateful: Each bank teller keeps their own personal notebook of customer info. You must go back to the same teller every time. Stateless: All tellers share one central computer system. Any teller can serve any customer because the info is in one place.",
+          },
+          takeaway: "Stateless servers are the industry standard. Always design your servers to be stateless and offload session state to Redis.",
+        },
+        {
+          type: "concept",
+          heading: "Health Checks & Automatic Failover",
+          body: "Every few seconds the load balancer sends a ping to each server — are you alive? If a server stops responding, the load balancer immediately stops sending traffic to it and redistributes to the remaining healthy servers. No human needs to intervene.",
+          analogy: {
+            emoji: "🏥",
+            title: "Hospital Monitor",
+            text: "Think of it like a patient monitor in a hospital. It constantly checks vitals. The moment something goes wrong, it alerts and triggers automatic responses — without waiting for a nurse to notice.",
+          },
+          takeaway: "Health checks are what make horizontal scaling reliable. Without them, you'd be sending traffic to dead servers and users would see errors.",
+        },
+        {
+          type: "comparison",
+          heading: "Layer 4 vs Layer 7 Load Balancing",
+          left: {
+            title: "Layer 4",
+            subtitle: "Transport Layer",
+            color: "blue",
+            description: "Routes based on IP address and TCP port only. Fast but dumb — doesn't look at request content.",
+            pros: ["Very fast", "Simple", "Low overhead"],
+            cons: ["Can't route based on URL path", "No content awareness"],
+            when: "Raw TCP/UDP traffic, gaming servers, simple routing",
+          },
+          right: {
+            title: "Layer 7",
+            subtitle: "Application Layer",
+            color: "violet",
+            description: "Routes based on actual HTTP content — URL path, headers, cookies.",
+            pros: [
+              "Route /api/* to API servers",
+              "Route /images/* to media servers",
+              "A/B testing support",
+              "SSL termination",
+            ],
+            cons: ["Slightly slower", "More resource intensive"],
+            when: "Web apps, microservices, API gateways — almost always",
+          },
+        },
+      ],
+    },
+    interviewTip: "Always start by clarifying scale requirements — how many users, read-heavy or write-heavy, acceptable downtime. Then say: I will start with a single server and identify bottlenecks, then scale each layer. Mention stateless servers and Redis for session management. This shows structured thinking, which is what interviewers want to see.",
+    relatedTopics: ["Caching", "Databases — SQL vs NoSQL", "Rate Limiting"],
+  },
+];
+
+export default systemDesignTopics;
