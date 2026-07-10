@@ -516,6 +516,168 @@ const systemDesignTopics = [
       },
     ],
   },
+  {
+    id: 4,
+    title: "CAP Theorem",
+    category: "HLD",
+    subcategory: "Fundamentals",
+    difficulty: "Intermediate",
+    summary: "Why distributed systems can only guarantee two of three properties — and what that means for your database choice.",
+    concepts: [
+      "Consistency — every node returns the same data",
+      "Availability — every request gets a response",
+      "Partition Tolerance — system works despite network failures",
+      "CP vs AP — the real trade-off",
+      "PACELC — extending CAP beyond partitions",
+    ],
+    content: {
+      problem: `You are building PlacePrep with servers in India and USA for low latency globally. A network cable cuts between the two data centers — the nodes cannot talk to each other. A student in India just updated their solved count. Now a student in USA reads the same data. What do you return? The old value and stay available? Or refuse to respond until you are sure the data is consistent? This is exactly the problem CAP Theorem describes — and every distributed database makes this choice.`,
+
+      sections: [
+        {
+          type: "concept",
+          heading: "What is a Distributed System",
+          body: "A distributed system stores data across multiple machines (nodes) instead of one. You distribute for three reasons — speed (serve users from nearby nodes), reliability (if one node dies, others keep running), and scale (split data when one machine is not enough). But the moment you have multiple nodes holding the same data, a fundamental problem emerges: what happens when those nodes cannot talk to each other?",
+          analogy: {
+            emoji: "🌍",
+            title: "Bank Branches",
+            text: "A bank with one head office is simple — all records in one place. But customers in Chennai cannot quickly access a Mumbai-only office. So you open branches in every city. Now each branch has account records. What happens when the phone lines between Mumbai and Chennai go down? Does the Chennai branch refuse all transactions until communication is restored? Or does it keep working with potentially outdated information?",
+          },
+          takeaway: "Distributing data solves speed and reliability — but creates a new problem: keeping all copies of data in sync when the network between them fails.",
+        },
+        {
+          type: "algorithm",
+          heading: "The Three Properties — C, A, P",
+          body: "CAP Theorem states that a distributed system can only guarantee two of these three properties simultaneously. Understanding each property precisely is the key to using this theorem correctly.",
+          flow: [
+            { label: "Consistency", target: "Every node returns the same most recent data", color: "#7c3aed" },
+            { label: "Availability", target: "Every request receives a response — not an error", color: "#2563eb" },
+            { label: "Partition Tolerance", target: "System keeps working despite network failures between nodes", color: "#059669" },
+          ],
+          analogy: {
+            emoji: "⚠️",
+            title: "The Critical Distinction",
+            text: "CAP Consistency is NOT the same as ACID Consistency. CAP Consistency means: if you write to Node 1 and immediately read from Node 2, you get the updated value. It is about all nodes agreeing on the same data at the same time. ACID Consistency means: data never violates your defined rules. Completely different concepts — mixing them up is the most common CAP mistake in interviews.",
+          },
+          pros: "Understanding each property separately is what allows you to make the right database choice for different parts of your system.",
+          cons: "The names are misleading — especially Consistency which means something different in CAP vs ACID. Always clarify which consistency you mean.",
+          takeaway: "Memorise this: CAP Consistency = all nodes agree on same data. ACID Consistency = data never breaks your rules. Different concepts, same word.",
+        },
+        {
+          type: "concept",
+          heading: "Why Partition Tolerance is Not Optional",
+          body: "Most CAP explanations say 'pick two of three' as if all three are equally choosable. This is misleading. Network partitions are not edge cases — they happen in any real distributed system. Cables get cut, routers fail, data centers lose power, AWS has outages. If your system cannot tolerate partitions, it crashes every time any network issue occurs. That is not a production system. So the real choice is not between C, A, and P equally. Partition Tolerance is mandatory. The real trade-off is between Consistency and Availability when a partition occurs.",
+          analogy: {
+            emoji: "🔌",
+            title: "Power Cuts in India",
+            text: "You do not design a hospital to shut down completely when there is a power cut. You accept that power cuts happen (partition tolerance) and design for it — either with a generator that keeps critical systems running at full capacity (CP — consistency maintained) or with battery backup that keeps basic functions running even if not fully updated (AP — available but possibly stale). The power cut itself is not optional to plan for.",
+          },
+          takeaway: "P is mandatory in real distributed systems. The actual question is: when a partition happens, do you choose C or A?",
+        },
+        {
+          type: "comparison",
+          heading: "CP vs AP — The Real Trade-off",
+          left: {
+            title: "CP Systems",
+            subtitle: "Consistency + Partition Tolerance",
+            color: "blue",
+            description: "When a partition occurs, the system refuses to respond rather than return potentially stale data.",
+            pros: [
+              "Data is always accurate and current",
+              "No risk of users seeing stale values",
+              "Safe for financial and medical data",
+              "Strong consistency guarantees",
+            ],
+            cons: [
+              "System returns errors during partitions",
+              "Lower availability — some requests fail",
+              "Users experience downtime during network issues",
+            ],
+            when: "Banking, payments, inventory management, medical records — any data where stale values cause real damage",
+          },
+          right: {
+            title: "AP Systems",
+            subtitle: "Availability + Partition Tolerance",
+            color: "emerald",
+            description: "When a partition occurs, the system keeps responding with the best data it has — possibly slightly stale.",
+            pros: [
+              "Always responds — no errors during partitions",
+              "High availability globally",
+              "Better user experience during network issues",
+              "Scales horizontally with ease",
+            ],
+            cons: [
+              "Data might be temporarily stale",
+              "Different nodes might return different values",
+              "Eventual consistency requires careful app design",
+            ],
+            when: "Social feeds, analytics, DNS, shopping carts, any data where slight staleness is acceptable",
+          },
+        },
+        {
+          type: "algorithm",
+          heading: "Real Database Positions in CAP",
+          body: "Every distributed database makes a deliberate CP or AP choice. Knowing where popular databases sit — and why — is exactly what interviewers test when they ask about CAP Theorem.",
+          flow: [
+            { label: "CP Databases", target: "MongoDB, Redis, HBase, Zookeeper — consistency over availability", color: "#7c3aed" },
+            { label: "AP Databases", target: "Cassandra, DynamoDB, CouchDB — availability over consistency", color: "#059669" },
+            { label: "CA Databases", target: "PostgreSQL, MySQL — only possible on single node (not truly distributed)", color: "#2563eb" },
+          ],
+          analogy: {
+            emoji: "🏧",
+            title: "ATM Machine vs DNS",
+            text: "ATM chooses CP — if the network to the bank cuts, the ATM refuses transactions rather than risk letting you withdraw money your account does not have. DNS chooses AP — when you update your domain IP, old values propagate slowly across DNS servers globally. Some servers return the old IP for hours. DNS stays available (always responds) at the cost of brief inconsistency (slightly stale IP). Money requires CP. Domain name lookups are fine with AP.",
+          },
+          pros: "Knowing database CAP positions lets you choose the right database for each part of your system instead of guessing.",
+          cons: "Real databases often let you tune consistency levels — Cassandra for example lets you choose consistency per query. CAP is a simplification of a more nuanced reality.",
+          takeaway: "MongoDB and Redis are CP by default. Cassandra and DynamoDB are AP by default. PostgreSQL and MySQL are CA — meaning they are not truly distributed.",
+        },
+        {
+          type: "concept",
+          heading: "PACELC — Beyond Partitions",
+          body: "CAP only describes what happens during a network partition. But what about normal operation when there is no partition? PACELC extends CAP: If Partition — choose between Availability and Consistency. Else (normal operation) — choose between Latency and Consistency. Even without a partition, distributed systems face a trade-off. To be consistent, nodes must coordinate on every write — adding latency. To be fast (low latency), nodes skip coordination — risking brief inconsistency. DynamoDB is PA/EL — available during partition, low latency normally. MongoDB is PC/EC — consistent during partition, consistent normally.",
+          analogy: {
+            emoji: "🚦",
+            title: "Traffic Light Coordination",
+            text: "To perfectly coordinate all traffic lights in a city (consistency), each light must communicate with a central system before changing (latency added). For faster response, each light works independently on its own timer (low latency) but intersections might occasionally conflict (brief inconsistency). PACELC says: even in normal times, you are trading consistency for speed.",
+          },
+          takeaway: "Mentioning PACELC when CAP comes up in an interview is an instant signal that you understand distributed systems deeply — most candidates have never heard of it.",
+        },
+      ],
+    },
+    interviewTip: "When asked about CAP Theorem, avoid just reciting the definition. Instead say: P is not really optional in production systems, so the real trade-off is C vs A during a partition. Then give a concrete example — ATM chooses CP because stale bank balance data is catastrophic, DNS chooses AP because slightly stale IP addresses are fine. Then mention PACELC to show you understand the trade-off extends beyond just partition scenarios. This three-part answer separates you from 90% of candidates.",
+    relatedTopics: ["Databases — SQL vs NoSQL", "Caching — Redis & CDN", "Scalability & Load Balancing"],
+    selfCheck: [
+      "What does CAP stand for? Define each property precisely.",
+      "Why is Partition Tolerance not really optional in production systems?",
+      "What is the real trade-off in CAP Theorem?",
+      "Give an example of a system that should be CP and explain why.",
+      "Give an example of a system that should be AP and explain why.",
+      "Where does MongoDB sit in CAP? Where does Cassandra sit?",
+      "What is PACELC and how does it extend CAP?",
+      "What is the difference between CAP Consistency and ACID Consistency?",
+    ],
+    companyExamples: [
+      {
+        company: "Amazon DynamoDB",
+        emoji: "📦",
+        color: "amber",
+        example: "DynamoDB is AP by default — it prioritizes availability and low latency. Amazon's shopping cart uses DynamoDB because a briefly stale cart (showing an item you just removed for a few milliseconds) is far better than the cart page throwing an error during a network partition. They accept eventual consistency for non-critical data.",
+      },
+      {
+        company: "Google Spanner",
+        emoji: "🔍",
+        color: "blue",
+        example: "Google Spanner technically violates CAP Theorem — it provides both consistency and availability at global scale. It does this using GPS clocks and atomic clocks to synchronize time across data centers, allowing nodes to coordinate without traditional network round-trips. It is CP in CAP terms but engineered to minimize the availability cost so dramatically it feels like both.",
+      },
+      {
+        company: "Apache Cassandra",
+        emoji: "⚡",
+        color: "rose",
+        example: "Cassandra is AP and was designed specifically for this. Netflix uses Cassandra for viewing history — if your watch history shows a slightly stale list for a few milliseconds during a network partition, nobody is harmed. Cassandra lets engineers tune consistency per query — you can request stronger consistency for critical reads at the cost of higher latency.",
+      },
+    ],
+  },
 ];
 
 export default systemDesignTopics;
