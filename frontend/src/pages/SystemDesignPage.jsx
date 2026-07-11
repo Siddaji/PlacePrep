@@ -5,6 +5,7 @@ import LoadBalancingDiagram from "../components/systemDesign/diagrams/LoadBalanc
 import CachingDiagram from "../components/systemDesign/diagrams/CachingDiagram.jsx";
 import DatabasesDiagram from "../components/systemDesign/diagrams/DatabasesDiagram.jsx";
 import CAPTheoremDiagram from "../components/systemDesign/diagrams/CAPTheoremDiagram.jsx";
+import MessageQueueDiagram from "../components/systemDesign/diagrams/MessageQueueDiagram.jsx";
 
 const STUDIED_KEY  = "placeprep-sd-studied";
 const STREAK_KEY   = "placeprep-sd-streak";
@@ -14,6 +15,7 @@ const DIAGRAMS = {
   2: <CachingDiagram />,
   3: <DatabasesDiagram />,
   4: <CAPTheoremDiagram />,
+  5: <MessageQueueDiagram />,
 };
 
 const DIFFICULTY_STYLES = {
