@@ -10,7 +10,7 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:4173",
-    "https://placeprep.vercel.app",
+    "https://place-prep-gamma.vercel.app",
   ],
 }));
 
