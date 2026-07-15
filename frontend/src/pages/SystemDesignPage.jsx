@@ -55,7 +55,6 @@ const COMPARISON_COLORS = {
   },
 };
 
-// ── Streak helpers ───────────────────────────────────────────
 
 function loadStreak() {
   try {
@@ -90,7 +89,6 @@ function updateStreak() {
   return updated;
 }
 
-// ── Streak Banner ────────────────────────────────────────────
 
 function StreakBanner({ streak }) {
   if (streak.count === 0) return null;
