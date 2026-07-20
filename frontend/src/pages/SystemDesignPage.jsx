@@ -74,11 +74,11 @@ function updateStreak() {
   const streak    = loadStreak();
   const yesterday = new Date(Date.now() - 86400000).toDateString();
 
-  if (streak.lastDate === today) return streak; // already studied today
+  if (streak.lastDate === today) return streak; 
 
   const newCount = streak.lastDate === yesterday
-    ? streak.count + 1   // consecutive day → extend streak
-    : 1;                  // gap → reset streak
+    ? streak.count + 1   
+    : 1;                  
 
   const updated = {
     count:    newCount,
