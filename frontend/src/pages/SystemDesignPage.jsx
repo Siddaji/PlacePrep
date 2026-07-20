@@ -6,6 +6,7 @@ import CachingDiagram from "../components/systemDesign/diagrams/CachingDiagram.j
 import DatabasesDiagram from "../components/systemDesign/diagrams/DatabasesDiagram.jsx";
 import CAPTheoremDiagram from "../components/systemDesign/diagrams/CAPTheoremDiagram.jsx";
 import MessageQueueDiagram from "../components/systemDesign/diagrams/MessageQueueDiagram.jsx";
+import RateLimitingDiagram from "../components/systemDesign/diagrams/RateLimitingDiagram.jsx";
 
 const STUDIED_KEY  = "placeprep-sd-studied";
 const STREAK_KEY   = "placeprep-sd-streak";
@@ -16,6 +17,7 @@ const DIAGRAMS = {
   3: <DatabasesDiagram />,
   4: <CAPTheoremDiagram />,
   5: <MessageQueueDiagram />,
+  6: <RateLimitingDiagram />,
 };
 
 const DIFFICULTY_STYLES = {
