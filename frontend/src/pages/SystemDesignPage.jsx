@@ -7,6 +7,10 @@ import DatabasesDiagram from "../components/systemDesign/diagrams/DatabasesDiagr
 import CAPTheoremDiagram from "../components/systemDesign/diagrams/CAPTheoremDiagram.jsx";
 import MessageQueueDiagram from "../components/systemDesign/diagrams/MessageQueueDiagram.jsx";
 import RateLimitingDiagram from "../components/systemDesign/diagrams/RateLimitingDiagram.jsx";
+import MicroservicesDiagram from "../components/systemDesign/diagrams/MicroservicesDiagram.jsx";
+import ConsistentHashingDiagram from "../components/systemDesign/diagrams/ConsistentHashingDiagram.jsx";
+import URLShortenerDiagram from "../components/systemDesign/diagrams/URLShortenerDiagram.jsx";
+import TwitterFeedDiagram from "../components/systemDesign/diagrams/TwitterFeedDiagram.jsx";
 
 const STUDIED_KEY  = "placeprep-sd-studied";
 const STREAK_KEY   = "placeprep-sd-streak";
@@ -18,6 +22,11 @@ const DIAGRAMS = {
   4: <CAPTheoremDiagram />,
   5: <MessageQueueDiagram />,
   6: <RateLimitingDiagram />,
+  7: <MicroservicesDiagram />,
+  8: <ConsistentHashingDiagram />,
+  9: <URLShortenerDiagram />,
+  10: <TwitterFeedDiagram />,
+
 };
 
 const DIFFICULTY_STYLES = {
