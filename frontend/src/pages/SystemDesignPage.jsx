@@ -25,7 +25,7 @@ const DIAGRAMS = {
   7: <MicroservicesDiagram />,
   8: <ConsistentHashingDiagram />,
   9: <URLShortenerDiagram />,
-  10: <TwitterFeedDiagram />,
+  10:<TwitterFeedDiagram />,
 
 };
 
