@@ -1,15 +1,15 @@
 import Badge from "../common/Badge.jsx";
 
 const DIFFICULTY_STYLES = {
-  Easy:   "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200",
-  Medium: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",
-  Hard:   "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-200",
+  Easy:   "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20",
+  Medium: "bg-amber-500/10 text-amber-400 ring-amber-500/20",
+  Hard:   "bg-rose-500/10 text-rose-400 ring-rose-500/20",
 };
 
 const PRIORITY_STYLES = {
-  P0: "bg-red-50 text-red-700 ring-1 ring-inset ring-red-200",
-  P1: "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-200",
-  P2: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200",
+  P0: "bg-red-500/10 text-red-400 ring-red-500/20",
+  P1: "bg-orange-500/10 text-orange-400 ring-orange-500/20",
+  P2: "bg-blue-500/10 text-blue-400 ring-blue-500/20",
 };
 
 function toLeetCodeUrl(title) {
@@ -20,53 +20,52 @@ function toLeetCodeUrl(title) {
   return `https://leetcode.com/problems/${slug}/`;
 }
 
-// no useState import needed anymore — this component owns no state
 function ProblemCard({ problem, isSolved, onToggleSolved }) {
   return (
-    <div className={`group flex flex-col rounded-2xl border bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${
+    <div className={`group flex flex-col rounded-2xl border bg-gray-900 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/30 ${
       isSolved
-        ? "border-emerald-200 bg-emerald-50/30"
-        : "border-slate-200 hover:border-violet-200"
+        ? "border-emerald-500/30 bg-emerald-500/5"
+        : "border-gray-800 hover:border-violet-500/30"
     }`}>
 
       {/* title + priority */}
       <div className="flex items-start justify-between gap-3">
-        <h3 className={`text-base font-semibold leading-snug ${
-          isSolved ? "text-slate-400 line-through" : "text-slate-900"
+        <h3 className={`text-sm font-semibold leading-snug ${
+          isSolved ? "text-gray-600 line-through" : "text-gray-100"
         }`}>
           {problem.title}
         </h3>
-        <Badge className={PRIORITY_STYLES[problem.priority] || "bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200"}>
+        <Badge className={`ring-1 ring-inset shrink-0 ${PRIORITY_STYLES[problem.priority] || "bg-gray-800 text-gray-400 ring-gray-700"}`}>
           {problem.priority}
         </Badge>
       </div>
 
       {/* difficulty + topic */}
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <Badge className={DIFFICULTY_STYLES[problem.difficulty] || "bg-slate-50 text-slate-600 ring-1 ring-inset ring-slate-200"}>
+        <Badge className={`ring-1 ring-inset ${DIFFICULTY_STYLES[problem.difficulty] || "bg-gray-800 text-gray-400 ring-gray-700"}`}>
           {problem.difficulty}
         </Badge>
-        <span className="inline-flex items-center rounded-full bg-violet-50 px-2.5 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200">
+        <span className="inline-flex items-center rounded-full bg-violet-500/10 px-2.5 py-0.5 text-xs font-medium text-violet-400 ring-1 ring-inset ring-violet-500/20">
           {problem.topic}
         </span>
       </div>
 
       {/* pattern */}
-      <p className="mt-3 text-sm text-slate-500">
-        <span className="font-medium text-slate-700">Pattern:</span>{" "}
+      <p className="mt-3 text-xs text-gray-600">
+        <span className="font-medium text-gray-500">Pattern:</span>{" "}
         {problem.pattern}
       </p>
 
       {/* companies */}
-      <div className="mt-4 pt-4 border-t border-slate-100">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide mb-2">
+      <div className="mt-4 pt-4 border-t border-gray-800">
+        <p className="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2">
           Companies
         </p>
         <div className="flex flex-wrap gap-1.5">
           {problem.companies.map(company => (
             <span
               key={company}
-              className="inline-flex items-center rounded-md bg-slate-100 px-2 py-1 text-xs font-medium text-slate-600"
+              className="inline-flex items-center rounded-md bg-gray-800 px-2 py-1 text-xs font-medium text-gray-400"
             >
               {company}
             </span>
@@ -75,12 +74,12 @@ function ProblemCard({ problem, isSolved, onToggleSolved }) {
       </div>
 
       {/* action row */}
-      <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+      <div className="mt-4 pt-4 border-t border-gray-800 flex items-center justify-between gap-3">
         <a
           href={toLeetCodeUrl(problem.title)}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-700 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 px-3 py-1.5 text-xs font-semibold text-gray-300 transition-colors"
         >
           Solve on LeetCode
           <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -92,8 +91,8 @@ function ProblemCard({ problem, isSolved, onToggleSolved }) {
           onClick={onToggleSolved}
           className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
             isSolved
-              ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+              : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-200"
           }`}
         >
           {isSolved ? (

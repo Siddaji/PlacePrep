@@ -2,16 +2,14 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getProblems } from "../services/problemService.js";
 
-// module cards data
 const modules = [
   {
     id: "dsa",
     to: "/dsa",
     title: "DSA Tracker",
-    description:
-      "Topic-wise problem lists with difficulty, priority, and company tags. Covers Arrays, Strings, Trees, Graphs, DP, and more.",
+    description: "Topic-wise problem lists with difficulty, priority, and company tags. Covers Arrays, Strings, Trees, Graphs, DP, and more.",
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
       </svg>
     ),
@@ -21,10 +19,9 @@ const modules = [
     id: "system-design",
     to: "/system-design",
     title: "System Design",
-    description:
-      "Beginner to advanced concepts. Load balancers, databases, caching, CDN, microservices — with interview-style breakdowns.",
+    description: "10 HLD topics with hand-coded SVG architecture diagrams. Load balancing, caching, CAP theorem, URL shortener, Twitter feed.",
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 01-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 01-1.125-1.125v-2.25z" />
       </svg>
     ),
@@ -34,10 +31,9 @@ const modules = [
     id: "subjects",
     to: "/subjects",
     title: "Core Subjects",
-    description:
-      "Concise notes and key questions for OS, DBMS, CN, and OOP — the four subjects that appear in almost every tech interview.",
+    description: "OS, DBMS, CN, OOP — 20 topics with must-know points, real-world analogies, and interview Q&A for every concept.",
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
       </svg>
     ),
@@ -45,52 +41,51 @@ const modules = [
   },
 ];
 
-const ACCENT_STYLES = {
+const ACCENT = {
   violet: {
-    icon:  "bg-violet-50 text-violet-600",
-    badge: "bg-violet-50 text-violet-700 ring-violet-200",
-    hover: "hover:border-violet-200 hover:shadow-violet-100",
-    arrow: "text-violet-400 group-hover:text-violet-600",
+    icon:   "bg-violet-500/10 text-violet-400",
+    badge:  "bg-violet-500/10 text-violet-400 ring-violet-500/20",
+    border: "hover:border-violet-500/40",
+    arrow:  "text-violet-500 group-hover:text-violet-400",
   },
   blue: {
-    icon:  "bg-blue-50 text-blue-600",
-    badge: "bg-blue-50 text-blue-700 ring-blue-200",
-    hover: "hover:border-blue-200 hover:shadow-blue-100",
-    arrow: "text-blue-400 group-hover:text-blue-600",
+    icon:   "bg-blue-500/10 text-blue-400",
+    badge:  "bg-blue-500/10 text-blue-400 ring-blue-500/20",
+    border: "hover:border-blue-500/40",
+    arrow:  "text-blue-500 group-hover:text-blue-400",
   },
   emerald: {
-    icon:  "bg-emerald-50 text-emerald-600",
-    badge: "bg-emerald-50 text-emerald-700 ring-emerald-200",
-    hover: "hover:border-emerald-200 hover:shadow-emerald-100",
-    arrow: "text-emerald-400 group-hover:text-emerald-600",
+    icon:   "bg-emerald-500/10 text-emerald-400",
+    badge:  "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20",
+    border: "hover:border-emerald-500/40",
+    arrow:  "text-emerald-500 group-hover:text-emerald-400",
   },
 };
 
 function ModuleCard({ module, stats }) {
-  const styles = ACCENT_STYLES[module.accent];
-
+  const a = ACCENT[module.accent];
   return (
     <Link
       to={module.to}
-      className={`group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${styles.hover}`}
+      className={`group flex flex-col rounded-2xl border border-gray-800 bg-gray-900 p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-black/20 ${a.border}`}
     >
       <div className="flex items-start justify-between">
-        <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${styles.icon}`}>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${a.icon}`}>
           {module.icon}
         </div>
-        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${styles.badge}`}>
+        <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${a.badge}`}>
           {stats}
         </span>
       </div>
 
-      <h3 className="mt-4 text-lg font-bold text-slate-900">
+      <h3 className="mt-4 text-base font-bold text-gray-100">
         {module.title}
       </h3>
-      <p className="mt-2 text-sm text-slate-500 leading-relaxed flex-1">
+      <p className="mt-2 text-sm text-gray-500 leading-relaxed flex-1">
         {module.description}
       </p>
 
-      <div className={`mt-5 flex items-center gap-1.5 text-sm font-medium transition-colors ${styles.arrow}`}>
+      <div className={`mt-5 flex items-center gap-1.5 text-sm font-medium transition-colors ${a.arrow}`}>
         Explore
         <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -109,12 +104,13 @@ function HomePage() {
       .catch(() => setProblemCount(null));
   }, []);
 
-  // build stats per module — only DSA has real data right now
-  function getStats(moduleId) {
-    if (moduleId === "dsa") {
+  function getStats(id) {
+    if (id === "dsa") {
       if (problemCount === null) return "Loading...";
       return `${problemCount} Problems`;
     }
+    if (id === "system-design") return "10 Topics";
+    if (id === "subjects")      return "20 Topics";
     return "Coming Soon";
   }
 
@@ -122,18 +118,19 @@ function HomePage() {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
       {/* hero */}
-      <section className="py-16 sm:py-24">
+      <section className="py-20 sm:py-28">
         <div className="max-w-2xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-700 ring-1 ring-inset ring-violet-200">
+
+          <span className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-3 py-1 text-xs font-semibold text-violet-400 ring-1 ring-inset ring-violet-500/20">
             Placement Prep Platform
           </span>
 
-          <h1 className="mt-5 text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight tracking-tight">
+          <h1 className="mt-6 text-4xl sm:text-5xl font-extrabold text-gray-100 leading-tight tracking-tight">
             Crack your placement.{" "}
-            <span className="text-violet-600">One platform.</span>
+            <span className="text-violet-400">One platform.</span>
           </h1>
 
-          <p className="mt-5 text-base sm:text-lg text-slate-500 leading-relaxed">
+          <p className="mt-5 text-base sm:text-lg text-gray-500 leading-relaxed">
             Structured DSA practice, System Design prep, and Core CS revision —
             everything a serious placement student needs, organized and ready to use.
           </p>
@@ -141,7 +138,7 @@ function HomePage() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
               to="/dsa"
-              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg"
+              className="inline-flex items-center gap-2 rounded-xl bg-violet-600 hover:bg-violet-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-500/20 transition-all hover:-translate-y-0.5"
             >
               Start with DSA
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -151,29 +148,44 @@ function HomePage() {
 
             <Link
               to="/subjects"
-              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex items-center gap-2 rounded-xl border border-gray-700 bg-gray-900 hover:bg-gray-800 hover:border-gray-600 px-5 py-3 text-sm font-semibold text-gray-300 transition-all"
             >
               Browse Subjects
             </Link>
           </div>
+
+          {/* subtle stats row */}
+          <div className="mt-10 flex items-center gap-6">
+            <div>
+              <p className="text-2xl font-bold text-gray-100">88</p>
+              <p className="text-xs text-gray-600 mt-0.5">DSA Problems</p>
+            </div>
+            <div className="h-8 w-px bg-gray-800" />
+            <div>
+              <p className="text-2xl font-bold text-gray-100">10</p>
+              <p className="text-xs text-gray-600 mt-0.5">System Design Topics</p>
+            </div>
+            <div className="h-8 w-px bg-gray-800" />
+            <div>
+              <p className="text-2xl font-bold text-gray-100">20</p>
+              <p className="text-xs text-gray-600 mt-0.5">Core Subject Topics</p>
+            </div>
+          </div>
+
         </div>
       </section>
 
       {/* divider */}
-      <div className="border-t border-slate-100" />
+      <div className="border-t border-gray-800" />
 
       {/* module cards */}
       <section className="py-12">
-        <h2 className="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-6">
+        <p className="text-xs font-semibold uppercase tracking-widest text-gray-600 mb-6">
           What's inside
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {modules.map(module => (
-            <ModuleCard
-              key={module.id}
-              module={module}
-              stats={getStats(module.id)}
-            />
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {modules.map(m => (
+            <ModuleCard key={m.id} module={m} stats={getStats(m.id)} />
           ))}
         </div>
       </section>
