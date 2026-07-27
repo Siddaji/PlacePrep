@@ -484,20 +484,20 @@ function TopicCard({ topic, isStudied, onToggleStudied }) {
           </div>
 
           {/* diagram */}
-          {DIAGRAMS[topic.id] && (
-            <div>
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest mb-3">
-                Architecture Diagram
-              </p>
-              {DIAGRAMS[topic.id]}
-            </div>
-          )}
+              {DIAGRAMS[topic.id] && (
+          <div>
+            <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest mb-3">
+              Architecture Diagram
+            </p>
+            {DIAGRAMS[topic.id]}
+          </div>
+        )}
 
           {/* deep dive */}
           <div className="space-y-5">
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest">
-              Deep Dive
-            </p>
+          <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest">
+             Deep Dive
+          </p>
             {topic.content.sections.map((section, i) => (
               <DeepDiveSection key={i} section={section} />
             ))}

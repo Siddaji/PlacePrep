@@ -1,7 +1,7 @@
 function URLShortenerDiagram() {
   return (
-    <div className="w-full overflow-x-auto rounded-xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4 text-center">
+    <div className="w-full overflow-x-auto rounded-xl border border-gray-800 bg-gray-900 p-4">
+      <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest mb-4 text-center">
         URL Shortener — Write Path + Read Path
       </p>
       <svg
