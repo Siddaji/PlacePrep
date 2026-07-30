@@ -109,21 +109,6 @@ npm start
 | `/api/system-design` | Fetch System Design resources |
 | `/api/subjects` | Fetch Core CS subjects |
 
----
-
-## 📸 Screenshots
-
-Add screenshots of your application here.
-
-Example:
-
-- Home Page
-- DSA Page
-- System Design Page
-- Subjects Page
-
----
-
 ## 🎯 Future Improvements
 
 - User Authentication
