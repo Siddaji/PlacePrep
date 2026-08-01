@@ -5,6 +5,7 @@ const navLinks = [
   { to: "/dsa",           label: "DSA" },
   { to: "/system-design", label: "System Design" },
   { to: "/subjects",      label: "Subjects" },
+  { to: "/roadmap",       label: "Roadmap" }, 
 ];
 
 function getNavClass({ isActive }) {

@@ -4,6 +4,7 @@ const links = [
   { to: "/dsa",           label: "DSA Tracker" },
   { to: "/system-design", label: "System Design" },
   { to: "/subjects",      label: "Core Subjects" },
+  { to: "/roadmap",       label: "8-Week Roadmap" },
 ];
 
 function Footer() {
