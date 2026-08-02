@@ -8,7 +8,7 @@ const roadmap = [
     estimatedHours: "2–3 hours/day",
     goal: "Build pattern recognition for the most common interview problems. Arrays and Hash Maps appear in 40% of all placement interviews.",
     dsaTopics: [
-      { title: "Arrays", problems: ["Two Sum", "Best Time to Buy and Sell Stock", "Maximum Subarray", "Product of Array Except Self", "Contains Duplicate", "3Sum", "Container With Most Water"] },
+      { title: "Arrays", problems: ["Two Sum", "Best Time to Buy and Sell Stock", "Maximum Subarray", "Product of Array Except Self", "Contains Duplicate", "3Sum", "Container With Most Water", "Majority Element", "Move Zeroes", "Sort Colors", "Jump Game"] },
       { title: "Hash Map", problems: ["Top K Frequent Elements", "Longest Consecutive Sequence", "LRU Cache", "Subarray Sum Equals K"] },
       { title: "Strings", problems: ["Valid Anagram", "Group Anagrams", "Longest Palindromic Substring", "Valid Parentheses"] },
     ],
@@ -34,9 +34,9 @@ const roadmap = [
     estimatedHours: "2–3 hours/day",
     goal: "Master the three most pattern-recognizable topics. Once you see a sorted array or a subarray question, you should immediately know which approach to use.",
     dsaTopics: [
-      { title: "Two Pointers", problems: ["Valid Palindrome", "Two Sum II", "Trapping Rain Water", "Remove Duplicates from Sorted Array"] },
+      { title: "Two Pointers", problems: ["Valid Palindrome", "Two Sum II", "Trapping Rain Water", "Remove Duplicates from Sorted Array", "4Sum", "Minimum Size Subarray Sum", "Max Consecutive Ones III"] },
       { title: "Sliding Window", problems: ["Longest Substring Without Repeating Characters", "Longest Repeating Character Replacement", "Permutation in String", "Sliding Window Maximum"] },
-      { title: "Binary Search", problems: ["Binary Search", "Search in Rotated Sorted Array", "Find Minimum in Rotated Sorted Array", "Koko Eating Bananas", "Median of Two Sorted Arrays"] },
+      { title: "Binary Search", problems: ["Binary Search", "Search Insert Position", "Search in Rotated Sorted Array", "Find Minimum in Rotated Sorted Array", "Find First and Last Position of Element in Sorted Array", "Koko Eating Bananas", "Capacity To Ship Packages Within D Days", "Median of Two Sorted Arrays"] },
     ],
     systemDesignTopics: [],
     subjectTopics: [
@@ -62,9 +62,9 @@ const roadmap = [
     estimatedHours: "2–3 hours/day",
     goal: "Trees are the most commonly asked data structure in product company interviews. Get comfortable with DFS and BFS before moving to graphs.",
     dsaTopics: [
-      { title: "Linked List", problems: ["Reverse Linked List", "Merge Two Sorted Lists", "Linked List Cycle", "Remove Nth Node From End", "Merge K Sorted Lists"] },
-      { title: "Stack", problems: ["Min Stack", "Daily Temperatures", "Evaluate Reverse Polish Notation", "Largest Rectangle in Histogram"] },
-      { title: "Trees — Basics", problems: ["Invert Binary Tree", "Maximum Depth of Binary Tree", "Diameter of Binary Tree", "Balanced Binary Tree", "Binary Tree Level Order Traversal"] },
+      { title: "Linked List", problems: ["Reverse Linked List", "Middle of the Linked List", "Merge Two Sorted Lists", "Linked List Cycle", "Palindrome Linked List", "Remove Nth Node From End", "Add Two Numbers", "Copy List with Random Pointer", "Merge K Sorted Lists"] },
+      { title: "Stack", problems: ["Min Stack", "Implement Queue using Stacks", "Daily Temperatures", "Next Greater Element I", "Next Greater Element II", "Asteroid Collision", "Basic Calculator II", "Evaluate Reverse Polish Notation", "Largest Rectangle in Histogram"] },
+      { title: "Trees — Basics", problems: ["Invert Binary Tree", "Same Tree", "Symmetric Tree", "Maximum Depth of Binary Tree", "Diameter of Binary Tree", "Balanced Binary Tree", "Path Sum", "Binary Tree Level Order Traversal"] },
     ],
     systemDesignTopics: [
       { id: 1, title: "Scalability & Load Balancing" },
@@ -93,7 +93,7 @@ const roadmap = [
     estimatedHours: "3 hours/day",
     goal: "Graphs are the most feared topic but also the most pattern-based. Every graph problem is either BFS, DFS, Topological Sort, or Union Find.",
     dsaTopics: [
-      { title: "Trees — Advanced", problems: ["Lowest Common Ancestor of BST", "Validate Binary Search Tree", "Kth Smallest in BST", "Binary Tree Maximum Path Sum", "Serialize and Deserialize Binary Tree"] },
+      { title: "Trees — Advanced", problems: ["Binary Tree Zigzag Level Order Traversal", "Binary Tree Right Side View", "Lowest Common Ancestor of a Binary Tree", "Lowest Common Ancestor of BST", "Validate Binary Search Tree", "Kth Smallest in BST", "Convert Sorted Array to BST", "Construct Binary Tree from Preorder and Inorder", "Binary Tree Maximum Path Sum", "Serialize and Deserialize Binary Tree"] },
       { title: "Graphs", problems: ["Number of Islands", "Clone Graph", "Course Schedule", "Course Schedule II", "Pacific Atlantic Water Flow", "Rotting Oranges", "Number of Connected Components"] },
     ],
     systemDesignTopics: [
@@ -128,8 +128,8 @@ const roadmap = [
       { title: "1D Dynamic Programming", problems: ["Climbing Stairs", "House Robber", "Coin Change", "Longest Increasing Subsequence"] },
       { title: "2D Dynamic Programming", problems: ["Unique Paths", "Longest Common Subsequence", "Edit Distance"] },
       { title: "Knapsack Variants", problems: ["0/1 Knapsack", "Coin Change", "Partition Equal Subset Sum"] },
-      { title: "Heap", problems: ["Kth Largest Element in Array", "Task Scheduler", "Find Median from Data Stream"] },
-      { title: "Backtracking", problems: ["Subsets", "Permutations", "Combination Sum", "Word Search", "Letter Combinations of Phone Number"] },
+      { title: "Heap", problems: ["Kth Largest Element in Array", "K Closest Points to Origin", "Last Stone Weight", "Sort Characters By Frequency", "Reorganize String", "Meeting Rooms II", "Task Scheduler", "Find Median from Data Stream"] },
+      { title: "Bit Manipulation", problems: ["Single Number", "Missing Number", "Number of 1 Bits", "Counting Bits", "Reverse Bits", "Power of Two", "Sum of Two Integers"] },      { title: "Backtracking", problems: ["Subsets", "Permutations", "Combination Sum", "Word Search", "Letter Combinations of Phone Number"] },
     ],
     systemDesignTopics: [
       { id: 4, title: "CAP Theorem" },

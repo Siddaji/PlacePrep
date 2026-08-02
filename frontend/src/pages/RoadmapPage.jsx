@@ -265,7 +265,7 @@ function RoadmapPage() {
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             { label: "Weeks",          value: "8" },
-            { label: "DSA Problems",   value: "88+" },
+            { label: "DSA Problems",   value: "154" },
             { label: "System Design",  value: "10" },
             { label: "Subject Topics", value: "20" },
           ].map(stat => (
