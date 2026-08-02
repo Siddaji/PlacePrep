@@ -176,7 +176,7 @@ function HomePage() {
           {/* subtle stats row */}
           <div className="mt-10 flex items-center gap-6">
             <div>
-              <p className="text-2xl font-bold text-gray-100">{problemCount}</p>
+              <p className="text-2xl font-bold text-gray-100">154</p>
               <p className="text-xs text-gray-600 mt-0.5">DSA Problems</p>
             </div>
             <div className="h-8 w-px bg-gray-800" />
