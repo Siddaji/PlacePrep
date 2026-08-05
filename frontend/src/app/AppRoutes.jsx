@@ -5,7 +5,9 @@ import DsaPage from "../pages/DsaPage.jsx";
 import SystemDesignPage from "../pages/SystemDesignPage.jsx";
 import SubjectsPage from "../pages/SubjectsPage.jsx";
 import RoadmapPage from "../pages/RoadmapPage.jsx";
+import CompanyDsaPage from "../pages/CompanyDsaPage.jsx";
 import NotFound from "../pages/NotFound.jsx";
+
 
 function AppRoutes() {
   return (
@@ -17,6 +19,7 @@ function AppRoutes() {
         <Route path="/subjects" element={<SubjectsPage />} />
          <Route path="/roadmap" element={<RoadmapPage />} /> 
         <Route path="*" element={<NotFound/>} />
+        <Route path="/company-dsa" element={<CompanyDsaPage />} />
       </Route>
     </Routes>
   );

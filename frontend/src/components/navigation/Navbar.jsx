@@ -3,9 +3,11 @@ import { NavLink } from "react-router-dom";
 
 const navLinks = [
   { to: "/dsa",           label: "DSA" },
+  { to: "/company-dsa",   label: "Company DSA" },
   { to: "/system-design", label: "System Design" },
   { to: "/subjects",      label: "Subjects" },
-  { to: "/roadmap",       label: "Roadmap" }, 
+  { to: "/roadmap",       label: "Roadmap" },
+  { to: "/pricing",       label: "Pricing" },
 ];
 
 function getNavClass({ isActive }) {
