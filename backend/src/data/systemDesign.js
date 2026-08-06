@@ -1,1474 +1,264 @@
 const systemDesignTopics = [
   {
     id: 1,
+    title: "Design a Rate Limiter",
+    category: "HLD",
+    subcategory: "API Gateway",
+    difficulty: "Intermediate",
+    companies: ["ByteDance", "Coinbase", "Stripe", "Uber"],
+    summary: "Design an API Rate Limiter to prevent abuse, mitigate DDoS attacks, and enforce quota limits across microservices.",
+    videos: [
+      {
+        title: "System Design: How to design a Rate Limiter",
+        url: "https://www.youtube.com/watch?v=FU4WlwfS3G0"
+      },
+      {
+        title: "Rate Limiter System Design in Hindi | API Gateway & Algorithms",
+        url: "https://youtu.be/CVItTb_jdkE?si=S-gc7I7M7NxmEtPg"
+      }
+    ]
+  },
+  {
+    id: 2,
+    title: "Design TinyURL",
+    category: "HLD",
+    subcategory: "Case Study",
+    difficulty: "Intermediate",
+    companies: ["Amazon", "Google", "Microsoft", "Meta"],
+    summary: "Design a service like bit.ly that converts long URLs to short codes and redirects users correctly at scale.",
+    videos: [
+      {
+        title: "System Design: Design TinyURL or URL Shortener",
+        language: "English",
+        url: "https://youtu.be/fMZMm_0ZhK4?si=FNorm5i0TbpFkDPY"
+      },
+      {
+        title: "TinyURL System Design in Hindi | System Design Course",
+        language: "Hindi",
+        url: "https://youtu.be/9csfoQK2T8g?si=UJSbaat1tD5fJnpY"
+      },
+      {
+        title: "TinyURL System Design in Hindi | System Design Course",
+        language: "Hindi",
+        url: "https://youtu.be/Y-BO_4XNw8c?si=3rWWzuUqp71xaW1N"
+      }
+    ]
+  },
+  {
+    id: 3,
+    title: "Design Twitter",
+    category: "HLD",
+    subcategory: "Feed Architecture",
+    difficulty: "Advanced",
+    companies: ["Meta", "Twitter/X", "Uber", "Netflix"],
+    summary: "Design the system that generates and displays a user's Twitter home timeline — fan-out on write vs fan-out on read.",
+    videos: [
+      {
+        title: "System Design: Design Twitter Home Timeline",
+        language: "English",
+        url: "https://youtu.be/Nfa-uUHuFHg?si=vHyWrMWQsGQI44FV"
+      },
+      {
+        title: "Twitter System Design in Hindi | Feed Architecture & Fanout",
+        language: "Hindi",
+        url: "https://youtu.be/Fy_Vo45P9xM?si=EwfUoMO18l4wVmb_"
+      }
+    ]
+  },
+  {
+    id: 4,
+    title: "Design YouTube",
+    category: "HLD",
+    subcategory: "Video Streaming & Storage",
+    difficulty: "Advanced",
+    companies: ["Google", "Netflix", "Amazon", "Meta"],
+    summary: "Design a scalable video streaming platform like YouTube or Netflix, focusing on video chunking, transcoding, and CDN distribution.",
+    videos: [
+      {
+        title: "System Design: Design YouTube Video Streaming Service",
+        language: "English",
+        url: "https://youtu.be/jPKTo1iGQiE?si=WZ1ro7JaO20MV0ef"
+      },
+      {
+        title: "YouTube System Design in Hindi | Video Upload & CDN Streaming",
+        language: "Hindi",
+        url: "https://youtu.be/xx0nGuX42Lk?si=v4HSBlgSsMdzisoK"
+      }
+    ]
+  },
+  {
+    id: 5,
+    title: "Design Google Drive",
+    category: "HLD",
+    subcategory: "Distributed Storage",
+    difficulty: "Advanced",
+    companies: ["Google", "Dropbox", "Microsoft", "Box"],
+    summary: "Design a cloud file storage and synchronization service like Google Drive or Dropbox with block-level syncing.",
+    videos: [
+      {
+        title: "System Design: Design Google Drive / Dropbox",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=U0xTu6E2CT8"
+      },
+      {
+        title: "Google Drive System Design in Hindi | Block Storage & Sync",
+        language: "Hindi",
+        url: "https://youtu.be/_Nh8iQ_D43o?si=L2ZIY0xY99D-QKcH"
+      },
+      {
+        title: "Google Drive System Design in Hindi | Block Storage & Sync",
+        language: "Hindi",
+        url: "https://youtu.be/Dnp_-xZjNRo?si=TZ5SilEawjbmqAfj"
+      }
+    ]
+  },
+  {
+    id: 6,
     title: "Scalability & Load Balancing",
     category: "HLD",
     subcategory: "Fundamentals",
     difficulty: "Beginner",
-    summary: "How systems handle growing traffic by distributing load across multiple servers.",
-    concepts: [
-      "Vertical vs Horizontal Scaling",
-      "Load Balancer Algorithms (Round Robin, Least Connections, IP Hashing)",
-      "Stateless vs Stateful Servers",
-      "Health Checks & Automatic Failover",
-      "Layer 4 vs Layer 7 Load Balancing",
-    ],
-    content: {
-      problem: `Imagine PlacePrep gets 10,000 students hitting it the night before campus placements. Your single server has limits — CPU, RAM, network bandwidth. Cross those limits and the server slows down, then crashes. Every student gets a blank screen the night before their interview. That is the problem scalability solves.`,
-
-      sections: [
-        {
-          type: "comparison",
-          heading: "Vertical vs Horizontal Scaling",
-          left: {
-            title: "Vertical Scaling",
-            subtitle: "Scale Up",
-            color: "blue",
-            description: "Make the one server bigger and more powerful.",
-            pros: ["Simple — no code changes needed", "Works well at small scale"],
-            cons: [
-              "Physical limit — can't scale forever",
-              "Very expensive at high end",
-              "Single point of failure",
-              "Requires downtime to upgrade",
-            ],
-            when: "Early stage startups, quick fixes",
-          },
-          right: {
-            title: "Horizontal Scaling",
-            subtitle: "Scale Out",
-            color: "emerald",
-            description: "Add more servers and distribute traffic across them.",
-            pros: [
-              "No single point of failure",
-              "Theoretically unlimited scale",
-              "Cheaper at scale",
-              "No downtime to add servers",
-            ],
-            cons: [
-              "More complex architecture",
-              "Need a load balancer",
-              "Session management is harder",
-            ],
-            when: "Production systems, high traffic apps",
-          },
-        },
-        {
-          type: "concept",
-          heading: "What is a Load Balancer",
-          body: "A load balancer sits in front of all your servers. Every incoming request hits the load balancer first — it then decides which server should handle it. The client never talks to a server directly. This gives you full control over traffic distribution, failover, and scaling.",
-          analogy: {
-            emoji: "🏦",
-            title: "Bank Receptionist",
-            text: "You walk into a bank with 5 counters. A receptionist at the door says — Counter 3 is free, please go there. You don't choose the counter. She decides based on who is busy. That receptionist is the load balancer.",
-          },
-          takeaway: "Load balancers are the traffic cops of your backend — nothing gets through without their direction.",
-        },
-        {
-          type: "algorithm",
-          heading: "Round Robin",
-          body: "Requests are distributed to servers in a fixed rotating order. Server 1 gets request 1, Server 2 gets request 2, Server 3 gets request 3, then back to Server 1.",
-          flow: [
-            { label: "Request 1", target: "Server 1", color: "#7c3aed" },
-            { label: "Request 2", target: "Server 2", color: "#2563eb" },
-            { label: "Request 3", target: "Server 3", color: "#059669" },
-            { label: "Request 4", target: "Server 1 ↩", color: "#7c3aed" },
-          ],
-          analogy: {
-            emoji: "🃏",
-            title: "Dealing Cards",
-            text: "Dealing cards at a table — one card per player, in order, cycling back to the first player. Simple and predictable.",
-          },
-          pros: "Simple to implement, works well when all requests have similar processing time.",
-          cons: "Ignores actual server load. A heavy request on Server 1 means Server 1 is stuck while Server 2 and 3 are idle.",
-          takeaway: "Use Round Robin only when your requests are roughly equal in cost.",
-        },
-        {
-          type: "algorithm",
-          heading: "Least Connections",
-          body: "The load balancer tracks how many active connections each server currently has. New requests always go to the server with the fewest active connections right now.",
-          flow: [
-            { label: "Server 1", target: "8 connections", color: "#dc2626" },
-            { label: "Server 2", target: "2 connections ✓", color: "#059669" },
-            { label: "Server 3", target: "5 connections", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "🛒",
-            title: "Supermarket Queue",
-            text: "You walk into a supermarket with 3 checkout lanes. You look at all three and join the one with the fewest people. Least Connections does exactly this — automatically, for every request.",
-          },
-          pros: "Accounts for actual server load. Much smarter than Round Robin for unequal requests.",
-          cons: "Slightly more complex to implement. Requires the load balancer to track connection counts.",
-          takeaway: "Default choice for most production systems. Smarter than Round Robin with minimal extra cost.",
-        },
-        {
-          type: "algorithm",
-          heading: "IP Hashing",
-          body: "The user's IP address is hashed to a number, which maps to a specific server. The same IP always gets routed to the same server — every single time.",
-          flow: [
-            { label: "IP: 192.168.1.1", target: "→ Always Server 1", color: "#7c3aed" },
-            { label: "IP: 192.168.1.2", target: "→ Always Server 2", color: "#2563eb" },
-            { label: "IP: 192.168.1.3", target: "→ Always Server 3", color: "#059669" },
-          ],
-          analogy: {
-            emoji: "🏠",
-            title: "Assigned Seating",
-            text: "Like a cinema with assigned seats. Your ticket always gets you the same seat. You don't choose — it's determined by your ticket number (your IP).",
-          },
-          pros: "Solves session persistence — same user always hits the same server where their session lives.",
-          cons: "If that server goes down, the user loses their session. Uneven distribution if some IPs generate more traffic.",
-          takeaway: "Only use IP Hashing if you have stateful servers and can't move to Redis yet. Stateless + Redis is always the better long-term solution.",
-        },
-        {
-          type: "concept",
-          heading: "Stateless vs Stateful Servers",
-          body: "A stateful server stores session data locally on itself. This ties a user to one specific server — bad for scaling. A stateless server stores session data in a shared external store like Redis. Any server can handle any request because they all read from the same central place.",
-          analogy: {
-            emoji: "📒",
-            title: "Bank Teller Notebooks",
-            text: "Stateful: Each bank teller keeps their own personal notebook of customer info. You must go back to the same teller every time. Stateless: All tellers share one central computer system. Any teller can serve any customer because the info is in one place.",
-          },
-          takeaway: "Stateless servers are the industry standard. Always design your servers to be stateless and offload session state to Redis.",
-        },
-        {
-          type: "concept",
-          heading: "Health Checks & Automatic Failover",
-          body: "Every few seconds the load balancer sends a ping to each server — are you alive? If a server stops responding, the load balancer immediately stops sending traffic to it and redistributes to the remaining healthy servers. No human needs to intervene.",
-          analogy: {
-            emoji: "🏥",
-            title: "Hospital Monitor",
-            text: "Think of it like a patient monitor in a hospital. It constantly checks vitals. The moment something goes wrong, it alerts and triggers automatic responses — without waiting for a nurse to notice.",
-          },
-          takeaway: "Health checks are what make horizontal scaling reliable. Without them, you'd be sending traffic to dead servers and users would see errors.",
-        },
-        {
-          type: "comparison",
-          heading: "Layer 4 vs Layer 7 Load Balancing",
-          left: {
-            title: "Layer 4",
-            subtitle: "Transport Layer",
-            color: "blue",
-            description: "Routes based on IP address and TCP port only. Fast but dumb — doesn't look at request content.",
-            pros: ["Very fast", "Simple", "Low overhead"],
-            cons: ["Can't route based on URL path", "No content awareness"],
-            when: "Raw TCP/UDP traffic, gaming servers, simple routing",
-          },
-          right: {
-            title: "Layer 7",
-            subtitle: "Application Layer",
-            color: "violet",
-            description: "Routes based on actual HTTP content — URL path, headers, cookies.",
-            pros: [
-              "Route /api/* to API servers",
-              "Route /images/* to media servers",
-              "A/B testing support",
-              "SSL termination",
-            ],
-            cons: ["Slightly slower", "More resource intensive"],
-            when: "Web apps, microservices, API gateways — almost always",
-          },
-        },
-      ],
-    },
-    interviewTip: "Always start by clarifying scale requirements — how many users, read-heavy or write-heavy, acceptable downtime. Then say: I will start with a single server and identify bottlenecks, then scale each layer. Mention stateless servers and Redis for session management. This shows structured thinking, which is what interviewers want to see.",
-    relatedTopics: ["Caching", "Databases — SQL vs NoSQL", "Rate Limiting"],
-    selfCheck: [
-      "What is the difference between vertical and horizontal scaling?",
-      "Name three load balancing algorithms and when you would use each one.",
-      "Why are stateless servers better for horizontal scaling?",
-      "How does a load balancer know when a server goes down?",
-      "What is the difference between Layer 4 and Layer 7 load balancing?",
-    ],
-    companyExamples: [
+    companies: ["Google", "Netflix", "Amazon", "Meta"],
+    summary: "Master horizontal vs vertical scaling, L4 vs L7 load balancing algorithms, and sticky sessions.",
+    videos: [
       {
-        company: "Netflix",
-        emoji: "🎬",
-        color: "rose",
-        example: "Netflix uses horizontal scaling with hundreds of microservices, each scaled independently. Their load balancer (Zuul) routes traffic based on request type — API calls go to one server pool, video streaming to another. They use stateless servers so any instance can handle any request.",
+        title: "System Design Basics: Load Balancing & Scalability",
+        language: "English",
+        url: "https://youtu.be/xpDnVSmNFX0?si=Qr7-JZqEIdVCHtrF"
       },
       {
-        company: "Google",
-        emoji: "🔍",
-        color: "blue",
-        example: "Google's load balancer (Maglev) handles millions of requests per second using consistent hashing. It is software-based and runs on commodity hardware — proving you do not need expensive specialized hardware to build world-class infrastructure.",
-      },
-      {
-        company: "Amazon",
-        emoji: "🛒",
-        color: "amber",
-        example: "During Prime Day, Amazon scales horizontally from thousands to tens of thousands of servers within minutes using auto-scaling groups. Their load balancer (ELB) automatically distributes traffic and performs health checks every 30 seconds.",
-      },
-    ],
-  },
-
-  {
-    id: 2,
-    title: "Caching — Redis & CDN",
-    category: "HLD",
-    subcategory: "Fundamentals",
-    difficulty: "Beginner",
-    summary: "How systems serve data faster by storing frequently accessed results closer to the user.",
-    concepts: [
-      "Cache Hit vs Cache Miss",
-      "Redis — In-Memory Key-Value Store",
-      "CDN — Geographic Caching",
-      "Cache Eviction Policies (LRU, LFU, TTL)",
-      "Cache Invalidation Strategies",
-    ],
-    content: {
-      problem: `Every time a student opens the DSA page, your backend queries the database to fetch all 88 problems. If 500 students open it simultaneously, your database gets hit 500 times for the exact same data. The problems haven't changed — you are doing the same expensive work 500 times. Caching solves this by doing the work once, storing the result, and serving that stored result to everyone else.`,
-
-      sections: [
-        {
-          type: "concept",
-          heading: "Cache Hit vs Cache Miss",
-          body: "A cache is a fast temporary storage layer between your app and your database. When a request arrives, you check the cache first. A cache hit means the data is there — serve it instantly, no database call needed. A cache miss means it is not there — fetch from the database, store it in the cache, then serve it. The next identical request will be a hit.",
-          analogy: {
-            emoji: "📚",
-            title: "Your Study Desk",
-            text: "Your bookshelf is the database — complete but slow to search. Your desk is the cache — only a few books, but instantly reachable. When you need a book that is already on your desk, you grab it immediately (cache hit). When it is not there, you walk to the bookshelf, get it, and put it on your desk for next time (cache miss).",
-          },
-          takeaway: "The goal of caching is to maximize cache hits and minimize expensive database calls.",
-        },
-        {
-          type: "concept",
-          heading: "Redis — In-Memory Key-Value Store",
-          body: "Redis stores data in RAM instead of disk. RAM is roughly 100x faster than disk reads — a database read takes ~10ms, a Redis read takes ~0.1ms. You store data as key-value pairs with an optional expiry time (TTL). When the TTL expires, Redis automatically removes the data so it does not become stale forever.",
-          analogy: {
-            emoji: "🧠",
-            title: "Short-Term Memory",
-            text: "Your brain's short-term memory is Redis — fast access, limited capacity, temporary. Your long-term memory is the database — slower to retrieve, but stores everything permanently. You use short-term memory for things you need right now, and long-term memory for things you need to keep forever.",
-          },
-          takeaway: "Redis is the industry standard cache. Default TTL for most applications is 1 hour for rarely-changing data, 5 minutes for frequently-changing data.",
-        },
-        {
-          type: "comparison",
-          heading: "Redis vs CDN — Two Levels of Caching",
-          left: {
-            title: "Redis",
-            subtitle: "Server-Side Cache",
-            color: "blue",
-            description: "Caches database query results and computed data at the application server level.",
-            pros: [
-              "Eliminates repeated database queries",
-              "Stores any data — JSON, strings, lists",
-              "Extremely fast — sub-millisecond reads",
-              "Supports complex data structures",
-            ],
-            cons: [
-              "Only helps at the server level",
-              "Data still travels from server to user",
-              "Requires memory management",
-            ],
-            when: "API responses, database query results, session storage, rate limiting counters",
-          },
-          right: {
-            title: "CDN",
-            subtitle: "Geographic Cache",
-            color: "emerald",
-            description: "Caches static files on servers distributed globally, serving users from the nearest location.",
-            pros: [
-              "Dramatically reduces latency globally",
-              "Reduces load on your origin server",
-              "Handles traffic spikes automatically",
-              "Built-in DDoS protection",
-            ],
-            cons: [
-              "Only works for static/cacheable content",
-              "Cache invalidation can be slow",
-              "Additional cost",
-            ],
-            when: "Static files (JS, CSS, images), HTML pages, video content, large file downloads",
-          },
-        },
-        {
-          type: "algorithm",
-          heading: "LRU — Least Recently Used",
-          body: "When the cache is full and a new item needs to be stored, LRU removes the item that was accessed least recently. The idea is that if you have not used something in a long time, you are unlikely to need it soon.",
-          flow: [
-            { label: "Cache full", target: "A → B → C → D (D = oldest)", color: "#64748b" },
-            { label: "New item E arrives", target: "Need to evict something", color: "#d97706" },
-            { label: "Evict D", target: "D was least recently used", color: "#dc2626" },
-            { label: "Store E", target: "A → B → C → E", color: "#059669" },
-          ],
-          analogy: {
-            emoji: "🗄️",
-            title: "Office Desk Cleanup",
-            text: "Your desk is full. You need space for a new document. You remove the document you have not touched in the longest time — it is probably the least relevant right now. That is LRU.",
-          },
-          pros: "Works well for most real-world access patterns where recently used data is likely to be used again soon.",
-          cons: "Does not account for frequency — an item accessed 1000 times last week but not today gets evicted before an item accessed once yesterday.",
-          takeaway: "LRU is the default choice for most caching systems including Redis. Use it unless you have a specific reason not to.",
-        },
-        {
-          type: "algorithm",
-          heading: "Cache Invalidation Strategies",
-          body: "Cache invalidation decides when and how to update cached data when the underlying database changes. Getting this wrong means users see stale data.",
-          flow: [
-            { label: "TTL", target: "Cache expires automatically after set time", color: "#7c3aed" },
-            { label: "Write-Through", target: "Update cache immediately on every DB write", color: "#2563eb" },
-            { label: "Cache-Aside", target: "Miss → DB → store in cache → serve", color: "#059669" },
-            { label: "Write-Behind", target: "Write to cache first, sync DB later", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "📰",
-            title: "Newspaper vs Breaking News",
-            text: "TTL is like a daily newspaper — you get fresh news every 24 hours, but news from 23 hours ago might be stale. Write-through is like a live news ticker — updated the moment something happens. Cache-aside is like checking your phone only when someone mentions news — lazy but efficient.",
-          },
-          pros: "Cache-Aside is the most flexible — only caches what is actually requested, works well with read-heavy workloads.",
-          cons: "Write-Through adds latency to every write operation. TTL risks serving stale data up to the TTL duration.",
-          takeaway: "Cache-Aside with a reasonable TTL is the most common production pattern. Write-Through for data where freshness is critical.",
-        },
-      ],
-    },
-    interviewTip: "When asked about caching in a system design interview, always mention three things: where you cache (Redis for server-side, CDN for static assets), what TTL you set and why, and how you handle cache invalidation. Interviewers specifically look for whether you have thought about stale data — most candidates forget this.",
-    relatedTopics: ["Scalability & Load Balancing", "Databases — SQL vs NoSQL", "Rate Limiting"],
-    selfCheck: [
-      "What is the difference between a cache hit and a cache miss?",
-      "Why is Redis faster than a traditional database?",
-      "What does TTL mean and why is it important?",
-      "Explain the LRU eviction policy in simple terms.",
-      "What is cache invalidation and why is it considered a hard problem?",
-      "When would you use a CDN instead of Redis?",
-    ],
-    companyExamples: [
-      {
-        company: "Netflix",
-        emoji: "🎬",
-        color: "rose",
-        example: "Netflix caches video metadata — title, description, thumbnail — in Redis with a 24-hour TTL. Their CDN (Open Connect) is unique: Netflix actually places CDN servers inside ISP networks worldwide, so your video never travels far. This is why Netflix rarely buffers.",
-      },
-      {
-        company: "Twitter",
-        emoji: "🐦",
-        color: "blue",
-        example: "Twitter caches your home timeline in Redis. When you open Twitter, your feed is pre-computed and stored in cache — not generated fresh from the database. This is why your feed loads in milliseconds despite following thousands of accounts.",
-      },
-      {
-        company: "Airbnb",
-        emoji: "🏠",
-        color: "emerald",
-        example: "Airbnb uses Redis to cache search results for popular destinations. Searching 'Paris, August' returns cached results instantly. They invalidate the cache when listing prices or availability change — an example of event-driven cache invalidation.",
-      },
-    ],
-  },
-  {
-    id: 3,
-    title: "Databases — SQL vs NoSQL",
-    category: "HLD",
-    subcategory: "Fundamentals",
-    difficulty: "Beginner",
-    summary: "How to choose the right database for your system based on data shape, relationships, and scale.",
-    concepts: [
-      "SQL — Tables, Schema, Foreign Keys",
-      "NoSQL — Documents, Flexibility, No Schema",
-      "ACID vs BASE Properties",
-      "When to use SQL vs NoSQL",
-      "Polyglot Persistence",
-    ],
-    content: {
-      problem: `You are building PlacePrep and need to store user data, problem lists, and solved progress. You open your laptop and face a choice — MySQL? MongoDB? PostgreSQL? Firebase? Most students just Google 'which is better' and get confused by 50 conflicting opinions. The real answer is: it depends on your data's shape and how you access it. Getting this wrong means slow queries, painful migrations, and scaling nightmares later.`,
-
-      sections: [
-        {
-          type: "concept",
-          heading: "SQL — Relational Databases",
-          body: "SQL databases store data in tables — rows and columns with a fixed structure. Before inserting anything, you define a schema: the exact columns, their types, and their constraints. Tables relate to each other through foreign keys — a column in one table references the primary key of another. This is what 'relational' means.",
-          analogy: {
-            emoji: "📋",
-            title: "Government Form",
-            text: "An official government form has every field pre-defined. You cannot add your own fields. You cannot skip mandatory fields. Every form looks identical. That fixed structure is exactly what a SQL schema enforces — a strict contract that every row must follow.",
-          },
-          takeaway: "SQL's strict schema is not a limitation — it is a feature. It guarantees your data is always in a predictable, valid shape.",
-        },
-        {
-          type: "concept",
-          heading: "NoSQL — Document Databases",
-          body: "NoSQL databases store data as flexible JSON-like documents. No fixed schema — each document can have different fields. Everything about one entity is stored together in one document. No joins needed. You fetch one document and you have everything about that entity instantly.",
-          analogy: {
-            emoji: "📁",
-            title: "Student File Folder",
-            text: "Instead of storing marks in one cabinet, attendance in another, and achievements in a third — everything about a student is in one folder. Open the folder, get everything instantly. Each student's folder can look different — one might have extra certificates, another might have a scholarship letter. NoSQL works the same way.",
-          },
-          takeaway: "NoSQL's flexibility is powerful for data that varies per entity and is always accessed together. The trade-off is weaker consistency guarantees.",
-        },
-        {
-          type: "comparison",
-          heading: "SQL vs NoSQL — Side by Side",
-          left: {
-            title: "SQL",
-            subtitle: "Relational",
-            color: "blue",
-            description: "Fixed tables, strict schema, powerful JOIN queries across related data.",
-            pros: [
-              "ACID compliance — data is always consistent",
-              "Powerful complex queries with JOINs",
-              "Well-defined relationships between data",
-              "Industry standard for 50+ years",
-            ],
-            cons: [
-              "Schema changes are painful at scale",
-              "Horizontal scaling is harder",
-              "Rigid structure limits flexibility",
-              "JOINs get expensive on massive datasets",
-            ],
-            when: "Financial data, user auth, e-commerce orders, anything needing complex queries across relationships",
-          },
-          right: {
-            title: "NoSQL",
-            subtitle: "Non-Relational",
-            color: "emerald",
-            description: "Flexible documents, no fixed schema, horizontal scaling built-in.",
-            pros: [
-              "Schema flexibility — change anytime",
-              "Horizontal scaling built in by design",
-              "Fast reads when data is co-located",
-              "Handles unstructured data naturally",
-            ],
-            cons: [
-              "Eventual consistency — not always up to date",
-              "No standard query language",
-              "Weak relational query support",
-              "Risk of data duplication",
-            ],
-            when: "User activity feeds, real-time chat, product catalogs, IOT data, anything with flexible or rapidly changing structure",
-          },
-        },
-        {
-          type: "algorithm",
-          heading: "ACID Properties — Why SQL is Trusted",
-          body: "ACID is a set of four guarantees that SQL databases provide for every transaction. These properties are what make SQL the only safe choice for financial and medical data.",
-          flow: [
-            { label: "Atomicity", target: "All steps succeed or all are rolled back — no partial updates", color: "#7c3aed" },
-            { label: "Consistency", target: "Data always moves from one valid state to another", color: "#2563eb" },
-            { label: "Isolation", target: "Concurrent transactions don't interfere with each other", color: "#059669" },
-            { label: "Durability", target: "Committed data survives crashes and restarts", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "💸",
-            title: "UPI Payment",
-            text: "You pay ₹500 to a friend via UPI. Atomicity ensures either both your balance goes down AND their balance goes up — or neither happens. Your ₹500 cannot disappear into thin air because Step 1 succeeded but Step 2 failed.",
-          },
-          pros: "ACID compliance is non-negotiable for financial systems, healthcare records, and any data where partial failure is catastrophic.",
-          cons: "Enforcing ACID adds overhead. SQL databases sacrifice some performance and scaling simplicity to provide these guarantees.",
-          takeaway: "If losing or corrupting data would cause real-world harm — money, health, legal — you need ACID, which means SQL.",
-        },
-        {
-          type: "algorithm",
-          heading: "BASE Properties — The NoSQL Trade-off",
-          body: "NoSQL databases trade ACID for BASE — they prioritize availability and performance over strict consistency. This trade-off is acceptable for many real-world applications where slight staleness is fine.",
-          flow: [
-            { label: "Basically Available", target: "System always responds even if data might be slightly stale", color: "#7c3aed" },
-            { label: "Soft State", target: "Data might be in transition between nodes", color: "#2563eb" },
-            { label: "Eventually Consistent", target: "All nodes will have the same data — eventually", color: "#059669" },
-          ],
-          analogy: {
-            emoji: "❤️",
-            title: "Instagram Likes",
-            text: "You like a post and instantly see 1,001 likes. Your friend in another city still sees 1,000 likes for a few seconds. Eventually both of you see the same count. Instagram chose speed over perfect accuracy on like counts — that trade-off is totally acceptable for social features but would be catastrophic for bank balances.",
-          },
-          pros: "BASE systems can be distributed across many servers globally, handle enormous scale, and remain available even during partial outages.",
-          cons: "Users might temporarily see stale data. Complex to reason about in code — you cannot assume data is always current.",
-          takeaway: "BASE is fine for social features, analytics, and content. Never use it for money, inventory counts, or anything where stale data causes real damage.",
-        },
-        {
-          type: "concept",
-          heading: "Polyglot Persistence — Use Both",
-          body: "Real production systems almost never use just one database. They use the right database for each type of data. This is called polyglot persistence — 'polyglot' means many languages, here meaning many database types. Using multiple databases is not complexity for its own sake — it is using the right tool for each job.",
-          analogy: {
-            emoji: "🔧",
-            title: "Mechanic's Toolbox",
-            text: "A mechanic does not use one tool for everything. Screwdriver for screws, wrench for bolts, hammer for nails. Using a hammer to drive a screw technically works but is painful and slow. Polyglot persistence is the same idea — use the right database for each data type instead of forcing everything into one.",
-          },
-          takeaway: "Most mature systems use SQL for critical relational data and NoSQL for high-volume flexible data. Do not feel pressured to pick just one.",
-        },
-      ],
-    },
-    interviewTip: "When asked 'SQL or NoSQL?' in an interview, never just pick one. Say: it depends on the data shape and access patterns. Then explain — if the data has complex relationships and needs ACID compliance I would use PostgreSQL. If it is high-volume flexible data accessed by a single entity key I would use MongoDB. Bonus: mention polyglot persistence and give a real example. This answer shows you understand trade-offs, which is exactly what interviewers test for.",
-    relatedTopics: ["Caching — Redis & CDN", "CAP Theorem", "Scalability & Load Balancing"],
-    selfCheck: [
-      "What is the difference between SQL and NoSQL in one sentence each?",
-      "What does ACID stand for? Give a real world example of Atomicity.",
-      "What is eventual consistency? Give a real world example.",
-      "When would you choose MongoDB over PostgreSQL?",
-      "What is polyglot persistence and why do companies use it?",
-      "A friend says just use MongoDB for everything. What would you tell them?",
-      "What is a foreign key and why does it matter?",
-    ],
-    companyExamples: [
-      {
-        company: "Instagram",
-        emoji: "📸",
-        color: "rose",
-        example: "Instagram uses PostgreSQL for user accounts, relationships, and posts — data with clear relationships that needs ACID compliance. They use Cassandra (NoSQL) for activity feeds and direct messages — high volume data that needs to scale horizontally across many servers. Classic polyglot persistence.",
-      },
-      {
-        company: "Uber",
-        emoji: "🚗",
-        color: "blue",
-        example: "Uber originally used PostgreSQL but migrated to MySQL for their core trip data, then added Cassandra for their geolocation data (driver positions updating every 4 seconds from millions of drivers globally). PostgreSQL could not handle that write volume — Cassandra was built exactly for this pattern.",
-      },
-      {
-        company: "LinkedIn",
-        emoji: "💼",
-        color: "emerald",
-        example: "LinkedIn uses both. MySQL for member profiles and connections where relationships matter. Espresso (their own NoSQL built on top of MySQL) for activity updates and notifications — billions of events per day that need horizontal scale. They literally built their own database to handle the scale NoSQL needed with some SQL guarantees.",
-      },
-    ],
-  },
-  {
-    id: 4,
-    title: "CAP Theorem",
-    category: "HLD",
-    subcategory: "Fundamentals",
-    difficulty: "Intermediate",
-    summary: "Why distributed systems can only guarantee two of three properties — and what that means for your database choice.",
-    concepts: [
-      "Consistency — every node returns the same data",
-      "Availability — every request gets a response",
-      "Partition Tolerance — system works despite network failures",
-      "CP vs AP — the real trade-off",
-      "PACELC — extending CAP beyond partitions",
-    ],
-    content: {
-      problem: `You are building PlacePrep with servers in India and USA for low latency globally. A network cable cuts between the two data centers — the nodes cannot talk to each other. A student in India just updated their solved count. Now a student in USA reads the same data. What do you return? The old value and stay available? Or refuse to respond until you are sure the data is consistent? This is exactly the problem CAP Theorem describes — and every distributed database makes this choice.`,
-
-      sections: [
-        {
-          type: "concept",
-          heading: "What is a Distributed System",
-          body: "A distributed system stores data across multiple machines (nodes) instead of one. You distribute for three reasons — speed (serve users from nearby nodes), reliability (if one node dies, others keep running), and scale (split data when one machine is not enough). But the moment you have multiple nodes holding the same data, a fundamental problem emerges: what happens when those nodes cannot talk to each other?",
-          analogy: {
-            emoji: "🌍",
-            title: "Bank Branches",
-            text: "A bank with one head office is simple — all records in one place. But customers in Chennai cannot quickly access a Mumbai-only office. So you open branches in every city. Now each branch has account records. What happens when the phone lines between Mumbai and Chennai go down? Does the Chennai branch refuse all transactions until communication is restored? Or does it keep working with potentially outdated information?",
-          },
-          takeaway: "Distributing data solves speed and reliability — but creates a new problem: keeping all copies of data in sync when the network between them fails.",
-        },
-        {
-          type: "algorithm",
-          heading: "The Three Properties — C, A, P",
-          body: "CAP Theorem states that a distributed system can only guarantee two of these three properties simultaneously. Understanding each property precisely is the key to using this theorem correctly.",
-          flow: [
-            { label: "Consistency", target: "Every node returns the same most recent data", color: "#7c3aed" },
-            { label: "Availability", target: "Every request receives a response — not an error", color: "#2563eb" },
-            { label: "Partition Tolerance", target: "System keeps working despite network failures between nodes", color: "#059669" },
-          ],
-          analogy: {
-            emoji: "⚠️",
-            title: "The Critical Distinction",
-            text: "CAP Consistency is NOT the same as ACID Consistency. CAP Consistency means: if you write to Node 1 and immediately read from Node 2, you get the updated value. It is about all nodes agreeing on the same data at the same time. ACID Consistency means: data never violates your defined rules. Completely different concepts — mixing them up is the most common CAP mistake in interviews.",
-          },
-          pros: "Understanding each property separately is what allows you to make the right database choice for different parts of your system.",
-          cons: "The names are misleading — especially Consistency which means something different in CAP vs ACID. Always clarify which consistency you mean.",
-          takeaway: "Memorise this: CAP Consistency = all nodes agree on same data. ACID Consistency = data never breaks your rules. Different concepts, same word.",
-        },
-        {
-          type: "concept",
-          heading: "Why Partition Tolerance is Not Optional",
-          body: "Most CAP explanations say 'pick two of three' as if all three are equally choosable. This is misleading. Network partitions are not edge cases — they happen in any real distributed system. Cables get cut, routers fail, data centers lose power, AWS has outages. If your system cannot tolerate partitions, it crashes every time any network issue occurs. That is not a production system. So the real choice is not between C, A, and P equally. Partition Tolerance is mandatory. The real trade-off is between Consistency and Availability when a partition occurs.",
-          analogy: {
-            emoji: "🔌",
-            title: "Power Cuts in India",
-            text: "You do not design a hospital to shut down completely when there is a power cut. You accept that power cuts happen (partition tolerance) and design for it — either with a generator that keeps critical systems running at full capacity (CP — consistency maintained) or with battery backup that keeps basic functions running even if not fully updated (AP — available but possibly stale). The power cut itself is not optional to plan for.",
-          },
-          takeaway: "P is mandatory in real distributed systems. The actual question is: when a partition happens, do you choose C or A?",
-        },
-        {
-          type: "comparison",
-          heading: "CP vs AP — The Real Trade-off",
-          left: {
-            title: "CP Systems",
-            subtitle: "Consistency + Partition Tolerance",
-            color: "blue",
-            description: "When a partition occurs, the system refuses to respond rather than return potentially stale data.",
-            pros: [
-              "Data is always accurate and current",
-              "No risk of users seeing stale values",
-              "Safe for financial and medical data",
-              "Strong consistency guarantees",
-            ],
-            cons: [
-              "System returns errors during partitions",
-              "Lower availability — some requests fail",
-              "Users experience downtime during network issues",
-            ],
-            when: "Banking, payments, inventory management, medical records — any data where stale values cause real damage",
-          },
-          right: {
-            title: "AP Systems",
-            subtitle: "Availability + Partition Tolerance",
-            color: "emerald",
-            description: "When a partition occurs, the system keeps responding with the best data it has — possibly slightly stale.",
-            pros: [
-              "Always responds — no errors during partitions",
-              "High availability globally",
-              "Better user experience during network issues",
-              "Scales horizontally with ease",
-            ],
-            cons: [
-              "Data might be temporarily stale",
-              "Different nodes might return different values",
-              "Eventual consistency requires careful app design",
-            ],
-            when: "Social feeds, analytics, DNS, shopping carts, any data where slight staleness is acceptable",
-          },
-        },
-        {
-          type: "algorithm",
-          heading: "Real Database Positions in CAP",
-          body: "Every distributed database makes a deliberate CP or AP choice. Knowing where popular databases sit — and why — is exactly what interviewers test when they ask about CAP Theorem.",
-          flow: [
-            { label: "CP Databases", target: "MongoDB, Redis, HBase, Zookeeper — consistency over availability", color: "#7c3aed" },
-            { label: "AP Databases", target: "Cassandra, DynamoDB, CouchDB — availability over consistency", color: "#059669" },
-            { label: "CA Databases", target: "PostgreSQL, MySQL — only possible on single node (not truly distributed)", color: "#2563eb" },
-          ],
-          analogy: {
-            emoji: "🏧",
-            title: "ATM Machine vs DNS",
-            text: "ATM chooses CP — if the network to the bank cuts, the ATM refuses transactions rather than risk letting you withdraw money your account does not have. DNS chooses AP — when you update your domain IP, old values propagate slowly across DNS servers globally. Some servers return the old IP for hours. DNS stays available (always responds) at the cost of brief inconsistency (slightly stale IP). Money requires CP. Domain name lookups are fine with AP.",
-          },
-          pros: "Knowing database CAP positions lets you choose the right database for each part of your system instead of guessing.",
-          cons: "Real databases often let you tune consistency levels — Cassandra for example lets you choose consistency per query. CAP is a simplification of a more nuanced reality.",
-          takeaway: "MongoDB and Redis are CP by default. Cassandra and DynamoDB are AP by default. PostgreSQL and MySQL are CA — meaning they are not truly distributed.",
-        },
-        {
-          type: "concept",
-          heading: "PACELC — Beyond Partitions",
-          body: "CAP only describes what happens during a network partition. But what about normal operation when there is no partition? PACELC extends CAP: If Partition — choose between Availability and Consistency. Else (normal operation) — choose between Latency and Consistency. Even without a partition, distributed systems face a trade-off. To be consistent, nodes must coordinate on every write — adding latency. To be fast (low latency), nodes skip coordination — risking brief inconsistency. DynamoDB is PA/EL — available during partition, low latency normally. MongoDB is PC/EC — consistent during partition, consistent normally.",
-          analogy: {
-            emoji: "🚦",
-            title: "Traffic Light Coordination",
-            text: "To perfectly coordinate all traffic lights in a city (consistency), each light must communicate with a central system before changing (latency added). For faster response, each light works independently on its own timer (low latency) but intersections might occasionally conflict (brief inconsistency). PACELC says: even in normal times, you are trading consistency for speed.",
-          },
-          takeaway: "Mentioning PACELC when CAP comes up in an interview is an instant signal that you understand distributed systems deeply — most candidates have never heard of it.",
-        },
-      ],
-    },
-    interviewTip: "When asked about CAP Theorem, avoid just reciting the definition. Instead say: P is not really optional in production systems, so the real trade-off is C vs A during a partition. Then give a concrete example — ATM chooses CP because stale bank balance data is catastrophic, DNS chooses AP because slightly stale IP addresses are fine. Then mention PACELC to show you understand the trade-off extends beyond just partition scenarios. This three-part answer separates you from 90% of candidates.",
-    relatedTopics: ["Databases — SQL vs NoSQL", "Caching — Redis & CDN", "Scalability & Load Balancing"],
-    selfCheck: [
-      "What does CAP stand for? Define each property precisely.",
-      "Why is Partition Tolerance not really optional in production systems?",
-      "What is the real trade-off in CAP Theorem?",
-      "Give an example of a system that should be CP and explain why.",
-      "Give an example of a system that should be AP and explain why.",
-      "Where does MongoDB sit in CAP? Where does Cassandra sit?",
-      "What is PACELC and how does it extend CAP?",
-      "What is the difference between CAP Consistency and ACID Consistency?",
-    ],
-    companyExamples: [
-      {
-        company: "Amazon DynamoDB",
-        emoji: "📦",
-        color: "amber",
-        example: "DynamoDB is AP by default — it prioritizes availability and low latency. Amazon's shopping cart uses DynamoDB because a briefly stale cart (showing an item you just removed for a few milliseconds) is far better than the cart page throwing an error during a network partition. They accept eventual consistency for non-critical data.",
-      },
-      {
-        company: "Google Spanner",
-        emoji: "🔍",
-        color: "blue",
-        example: "Google Spanner technically violates CAP Theorem — it provides both consistency and availability at global scale. It does this using GPS clocks and atomic clocks to synchronize time across data centers, allowing nodes to coordinate without traditional network round-trips. It is CP in CAP terms but engineered to minimize the availability cost so dramatically it feels like both.",
-      },
-      {
-        company: "Apache Cassandra",
-        emoji: "⚡",
-        color: "rose",
-        example: "Cassandra is AP and was designed specifically for this. Netflix uses Cassandra for viewing history — if your watch history shows a slightly stale list for a few milliseconds during a network partition, nobody is harmed. Cassandra lets engineers tune consistency per query — you can request stronger consistency for critical reads at the cost of higher latency.",
-      },
-    ],
-  },
-  {
-    id: 5,
-    title: "Message Queues & Kafka",
-    category: "HLD",
-    subcategory: "Fundamentals",
-    difficulty: "Intermediate",
-    summary: "How systems handle background tasks, decouple services, and absorb traffic spikes using asynchronous messaging.",
-    concepts: [
-      "Producer, Consumer, Queue",
-      "Synchronous vs Asynchronous Processing",
-      "Kafka Topics and Partitions",
-      "Consumer Groups",
-      "Message Retention",
-    ],
-    content: {
-      problem: `A student clicks Mark as Solved on PlacePrep. Six things need to happen — save to database, update streak, recalculate progress, send congratulations email, update leaderboard, log analytics. The naive approach does all six synchronously before responding. The student waits 800ms for a simple button click. If the email service is down, the entire request fails. If 10,000 students click simultaneously, the server is overwhelmed. The student only needs step 1 confirmed immediately. Steps 2 through 6 can happen in the background. This is exactly what message queues solve.`,
-
-      sections: [
-        {
-          type: "concept",
-          heading: "What is a Message Queue",
-          body: "A message queue is a temporary storage buffer that sits between services. One service puts a message in — it is called the Producer. Another service picks it up and processes it independently and asynchronously — it is called the Consumer. The producer does not wait for the consumer to finish. It fires the message and moves on. The consumer works at its own pace, in the background, completely independently.",
-          analogy: {
-            emoji: "🍽️",
-            title: "Restaurant Kitchen",
-            text: "A customer places an order (Producer) — the order ticket goes on the rail (Queue). The chef picks it up and cooks (Consumer). The customer does not stand at the counter waiting for the food to be cooked before sitting down. They sit down immediately. The kitchen processes tickets independently. If the kitchen gets overwhelmed, tickets pile up on the rail — they are not lost, just delayed. A second chef (consumer) can be added to process tickets faster.",
-          },
-          takeaway: "Message queues let you respond to the user instantly and do the heavy lifting in the background. This is the foundation of every scalable backend.",
-        },
-        {
-          type: "algorithm",
-          heading: "Four Key Benefits of Message Queues",
-          body: "Message queues solve four distinct problems that appear in every large-scale system. Understanding each benefit separately is what allows you to explain why you would use one in a system design interview.",
-          flow: [
-            { label: "Decoupling", target: "Producer and Consumer do not know about each other — replace either without changing the other", color: "#7c3aed" },
-            { label: "Resilience", target: "If Consumer crashes, messages wait in queue — nothing lost, processed when it recovers", color: "#2563eb" },
-            { label: "Load Leveling", target: "Traffic spikes absorbed by queue — Consumer processes at steady rate regardless of burst", color: "#059669" },
-            { label: "Independent Scaling", target: "Scale Producers and Consumers separately based on their individual bottlenecks", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "📬",
-            title: "Post Office",
-            text: "You post a letter (Producer). The post office stores it (Queue). The postman delivers it (Consumer). You do not follow the postman around waiting for delivery. If the postman is sick, letters pile up at the post office — not lost. When a new postman starts, the backlog is delivered. Add more postmen (scale consumers) when volume is high.",
-          },
-          pros: "Decoupling is the biggest benefit — services can evolve independently. Resilience means failures in one service do not cascade to others.",
-          cons: "Adds operational complexity. Debugging is harder — errors happen asynchronously and are harder to trace. Message ordering can be tricky.",
-          takeaway: "Use a message queue whenever a task does not need to complete before the user gets a response, or when multiple services need to react to the same event.",
-        },
-        {
-          type: "comparison",
-          heading: "Synchronous vs Asynchronous Processing",
-          left: {
-            title: "Synchronous",
-            subtitle: "Without Queue",
-            color: "blue",
-            description: "Every step must complete before the response is sent. User waits for all background work.",
-            pros: [
-              "Simple to understand and debug",
-              "Immediate confirmation of all steps",
-              "No extra infrastructure needed",
-            ],
-            cons: [
-              "User waits for every step — slow response",
-              "One failing step fails entire request",
-              "Cannot handle traffic spikes well",
-              "All services tightly coupled",
-            ],
-            when: "Simple apps, low traffic, when all steps must succeed before confirming to user (e.g. payment processing)",
-          },
-          right: {
-            title: "Asynchronous",
-            subtitle: "With Queue",
-            color: "emerald",
-            description: "Critical step completes and responds immediately. Background work happens independently via queue.",
-            pros: [
-              "Instant response to user",
-              "Background failures do not affect user",
-              "Handles traffic spikes gracefully",
-              "Services are loosely coupled",
-            ],
-            cons: [
-              "User cannot be immediately told if background steps failed",
-              "More complex architecture",
-              "Requires queue infrastructure",
-            ],
-            when: "Email sending, analytics, notifications, leaderboard updates — anything the user does not need to wait for",
-          },
-        },
-        {
-          type: "concept",
-          heading: "Kafka — Topics and Partitions",
-          body: "Apache Kafka is not a simple queue — it is a distributed event streaming platform. In Kafka, messages are organized into Topics (like categories) and each topic is split into Partitions (parallel lanes). Multiple consumers can read from different partitions simultaneously giving massive throughput. Kafka handles millions of messages per second at companies like LinkedIn, Netflix, and Uber.",
-          analogy: {
-            emoji: "🛣️",
-            title: "Highway with Multiple Lanes",
-            text: "A single-lane road (simple queue) handles one car at a time. A six-lane highway (Kafka with 6 partitions) handles six cars simultaneously. Adding more lanes (partitions) increases throughput linearly. Each lane has its own traffic (consumer) processing independently. The highway does not care if one lane is slower — the others keep moving.",
-          },
-          takeaway: "Kafka partitions are the key to its scalability. More partitions means more consumers can process in parallel — linearly increasing throughput.",
-        },
-        {
-          type: "concept",
-          heading: "Message Retention — Kafka's Superpower",
-          body: "Simple queues delete messages after a consumer reads them. Kafka retains messages for a configurable period — default 7 days. This means multiple independent consumers can read the same messages. If a consumer has a bug and processes messages incorrectly, it can rewind and reprocess from the beginning. You can replay all events from day one to rebuild any derived data. This is the foundation of event sourcing — a powerful architectural pattern.",
-          analogy: {
-            emoji: "📼",
-            title: "Video Recording vs Live TV",
-            text: "Simple queue is like live TV — once broadcast, gone forever. Miss it and it is lost. Kafka is like a recording — the content stays on the tape for 7 days. You can watch it whenever you want, rewind to any point, and multiple people can watch simultaneously without affecting each other.",
-          },
-          takeaway: "Message retention is what separates Kafka from RabbitMQ. It enables event replay, multiple independent consumers, and debugging of historical data — critical for analytics and audit systems.",
-        },
-        {
-          type: "comparison",
-          heading: "RabbitMQ vs Kafka",
-          left: {
-            title: "RabbitMQ",
-            subtitle: "Traditional Queue",
-            color: "blue",
-            description: "Classic message broker. Message deleted after consumption. Simple and reliable.",
-            pros: [
-              "Simple to set up and operate",
-              "Good for task queues",
-              "Supports complex routing rules",
-              "Message acknowledgment built in",
-            ],
-            cons: [
-              "Message lost after consumption",
-              "Harder to scale to billions of messages",
-              "No message replay capability",
-            ],
-            when: "Task queues, job scheduling, simple async workflows — millions of messages per day",
-          },
-          right: {
-            title: "Kafka",
-            subtitle: "Event Streaming",
-            color: "emerald",
-            description: "Distributed event streaming. Messages retained. Multiple consumers. Massive scale.",
-            pros: [
-              "Retains messages for replay",
-              "Multiple consumers read same messages",
-              "Handles billions of messages per day",
-              "Built for distributed systems",
-            ],
-            cons: [
-              "More complex to set up",
-              "Overkill for simple task queues",
-              "Requires more operational expertise",
-            ],
-            when: "Event streaming, analytics pipelines, audit logs, microservices at scale — billions of messages per day",
-          },
-        },
-      ],
-    },
-    interviewTip: "When message queues come up in a system design interview, always explain the async pattern first — why the user should not wait for background work. Then mention the four benefits: decoupling, resilience, load leveling, independent scaling. For Kafka specifically, mention partitions for throughput and message retention for replay. Interviewers love when you contrast RabbitMQ vs Kafka and explain when you would choose each — it shows you understand trade-offs, not just definitions.",
-    relatedTopics: ["Scalability & Load Balancing", "Microservices vs Monolith", "Rate Limiting"],
-    selfCheck: [
-      "What is the difference between a Producer and a Consumer?",
-      "Name four key benefits of message queues and explain each.",
-      "What is the difference between synchronous and asynchronous processing?",
-      "What is a Kafka topic and what are partitions?",
-      "Why does Kafka retain messages instead of deleting them after consumption?",
-      "When would you use RabbitMQ instead of Kafka?",
-      "Give one real example from PlacePrep where a message queue would help.",
-    ],
-    companyExamples: [
-      {
-        company: "LinkedIn",
-        emoji: "💼",
-        color: "blue",
-        example: "LinkedIn actually created Kafka in 2011 to handle their activity stream — every profile view, connection request, and post like generated an event. At peak they process over 7 trillion messages per day. Kafka was born out of LinkedIn's need to decouple their data pipeline from their application servers.",
-      },
-      {
-        company: "Uber",
-        emoji: "🚗",
-        color: "emerald",
-        example: "Uber uses Kafka to process real-time events from millions of drivers and riders simultaneously — location updates every 4 seconds, trip status changes, payment events. Kafka's partitioning lets them scale to handle surge pricing calculations and driver dispatch in real time across all cities simultaneously.",
-      },
-      {
-        company: "Netflix",
-        emoji: "🎬",
-        color: "rose",
-        example: "Netflix uses Kafka as the backbone of their real-time data pipeline. Every time you play, pause, or stop a video, a Kafka event is produced. Consumer services process these events for recommendations, analytics, and billing independently. If the recommendations service goes down, your watch event is not lost — it stays in Kafka until the service recovers.",
-      },
-    ],
-  },
-  {
-    id: 6,
-    title: "Rate Limiting",
-    category: "HLD",
-    subcategory: "Fundamentals",
-    difficulty: "Intermediate",
-    summary: "How systems protect themselves from abuse and overload by controlling how many requests a client can make in a given time window.",
-    concepts: [
-      "Token Bucket Algorithm",
-      "Leaky Bucket Algorithm",
-      "Fixed Window Counter",
-      "Sliding Window Log",
-      "Distributed Rate Limiting with Redis",
-    ],
-    content: {
-      problem: `PlacePrep's API is open. A malicious user writes a script that sends 50,000 requests per second — scraping all problems, hammering the backend, and making the service unavailable for real students. A competitor's bot is abusing your free tier. Without rate limiting, one bad actor can take down your entire platform. Rate limiting is the mechanism that says — you get 100 requests per minute, no more.`,
-      sections: [
-        {
-          type: "concept",
-          heading: "What is Rate Limiting",
-          body: "Rate limiting controls how many requests a client (identified by IP, user ID, or API key) can make within a time window. When the limit is exceeded, the server returns HTTP 429 Too Many Requests instead of processing the request. Rate limiting protects against DDoS attacks, brute force login attempts, API abuse, and accidental traffic spikes from buggy clients.",
-          analogy: {
-            emoji: "🎫",
-            title: "Concert Ticket Queue",
-            text: "A concert hall allows 100 people in per minute regardless of how many are outside. The 101st person must wait until the next minute. It does not matter if they are a VIP or a regular customer — the rate is fixed. This protects the hall from overcrowding and ensures a good experience for those inside.",
-          },
-          takeaway: "Rate limiting is your first line of defense against abuse. Every public API needs it — not just for security but for fair resource allocation among all users.",
-        },
-        {
-          type: "algorithm",
-          heading: "Token Bucket Algorithm",
-          body: "A bucket holds a maximum of N tokens. Tokens are added at a fixed rate (e.g., 10 per second). Each request consumes one token. If the bucket has tokens, the request is allowed and a token is removed. If the bucket is empty, the request is rejected. The bucket can accumulate tokens up to its maximum capacity — allowing short bursts.",
-          flow: [
-            { label: "Bucket capacity", target: "100 tokens max", color: "#7c3aed" },
-            { label: "Refill rate", target: "10 tokens per second added", color: "#2563eb" },
-            { label: "Request arrives", target: "Has token? Allow + remove token", color: "#059669" },
-            { label: "Bucket empty", target: "Reject — return HTTP 429", color: "#dc2626" },
-          ],
-          analogy: {
-            emoji: "🪣",
-            title: "Water Bucket",
-            text: "A bucket fills with water (tokens) at a steady rate. You can take water (make requests) as fast as you want until the bucket is empty. If you take slowly, the bucket fills up and you can burst later. If you flood requests, the bucket empties and you must wait for it to refill. The bucket never overflows beyond its capacity.",
-          },
-          pros: "Allows burst traffic up to bucket capacity. Smooth average rate. Memory efficient — just store token count and timestamp per user.",
-          cons: "Two parameters to tune (capacity and refill rate). Slightly harder to implement than fixed window.",
-          takeaway: "Token Bucket is the most widely used algorithm — used by AWS API Gateway, Stripe, and most major APIs. Prefer it for its burst-handling capability.",
-        },
-        {
-          type: "algorithm",
-          heading: "Fixed Window Counter",
-          body: "Divide time into fixed windows (e.g., each minute). Count requests per window per client. When count exceeds limit, reject until the next window starts. Simple to implement but has an edge case — a client can send 100 requests at 12:00:59 and 100 more at 12:01:01, effectively sending 200 requests in 2 seconds while staying within the 100-per-minute limit.",
-          flow: [
-            { label: "Window: 12:00–12:01", target: "Client sends 100 requests — limit hit", color: "#7c3aed" },
-            { label: "Window resets at 12:01", target: "Counter resets to 0", color: "#059669" },
-            { label: "12:00:59 + 12:01:01", target: "200 requests in 2 seconds — edge case", color: "#dc2626" },
-            { label: "Sliding Window", target: "Solves this edge case", color: "#2563eb" },
-          ],
-          analogy: {
-            emoji: "🕐",
-            title: "Hourly Parking",
-            text: "Hourly parking resets every hour at the clock. Someone who parks at 12:59 and again at 1:01 has used two slots in 2 minutes. The fixed window does not see this — each window only counts its own hour. Sliding window would catch this by looking at the last 60 minutes regardless of clock boundaries.",
-          },
-          pros: "Extremely simple to implement. Just one counter per window per user stored in Redis.",
-          cons: "Boundary spike problem — allows 2x the intended rate at window boundaries.",
-          takeaway: "Fixed Window is fine for loose rate limiting. For strict limits use Sliding Window Log or Token Bucket.",
-        },
-        {
-          type: "comparison",
-          heading: "Rate Limiting Storage — Local vs Distributed",
-          left: {
-            title: "Local Memory",
-            subtitle: "Single Server",
-            color: "blue",
-            description: "Store rate limit counters in application memory on each server.",
-            pros: [
-              "Zero network latency",
-              "Simple to implement",
-              "No external dependency",
-            ],
-            cons: [
-              "Does not work with multiple servers",
-              "User routed to Server A may bypass limit on Server B",
-              "Lost on server restart",
-            ],
-            when: "Single server apps, development environments",
-          },
-          right: {
-            title: "Redis",
-            subtitle: "Distributed",
-            color: "emerald",
-            description: "Store counters in Redis — all servers share the same rate limit state.",
-            pros: [
-              "Works across all servers",
-              "Atomic INCR operations prevent race conditions",
-              "TTL built in for window expiry",
-              "Sub-millisecond latency",
-            ],
-            cons: [
-              "External dependency",
-              "Slightly more complex",
-              "Redis outage affects rate limiting",
-            ],
-            when: "Any production system with multiple servers",
-          },
-        },
-      ],
-    },
-    interviewTip: "When rate limiting comes up in system design, mention three things: the algorithm you would use (Token Bucket for most cases), where you store the counters (Redis with atomic INCR and TTL), and what HTTP status code you return (429 Too Many Requests with a Retry-After header). Also mention that rate limits can be applied at multiple levels — IP level, user level, and API key level simultaneously.",
-    relatedTopics: ["Caching — Redis & CDN", "Scalability & Load Balancing", "Message Queues & Kafka"],
-    selfCheck: [
-      "What is rate limiting and why is it needed?",
-      "Explain the Token Bucket algorithm.",
-      "What is the boundary spike problem in Fixed Window Counter?",
-      "Why use Redis instead of local memory for rate limiting counters?",
-      "What HTTP status code does rate limiting return?",
-    ],
-    companyExamples: [
-      {
-        company: "Stripe",
-        emoji: "💳",
-        color: "violet",
-        example: "Stripe uses Token Bucket rate limiting on their payment API. Each API key gets a bucket of 100 requests with a refill rate of 100 per second. They return 429 with a Retry-After header so clients know exactly when to retry. Stripe chose Token Bucket specifically because it handles burst traffic from legitimate payment spikes without penalizing good actors.",
-      },
-      {
-        company: "GitHub",
-        emoji: "🐙",
-        color: "blue",
-        example: "GitHub API allows 5,000 requests per hour for authenticated users and 60 per hour for unauthenticated requests. They use a fixed window that resets every hour. Every API response includes X-RateLimit-Limit, X-RateLimit-Remaining, and X-RateLimit-Reset headers so developers can track their usage programmatically.",
-      },
-      {
-        company: "Twitter",
-        emoji: "🐦",
-        color: "emerald",
-        example: "Twitter uses rate limiting at multiple levels simultaneously — per user, per application, and per endpoint. The search endpoint has a stricter limit than the timeline endpoint. Twitter stores all rate limit state in Redis clusters, allowing consistent limits across all their API servers globally.",
-      },
-    ],
+        title: "Load Balancing & Horizontal Scaling Explained in Hindi",
+        language: "Hindi",
+        url: "https://youtu.be/TXJP0gzCXFQ?si=keNG7bRFRQp1NLNp"
+      }
+    ]
   },
   {
     id: 7,
-    title: "Microservices vs Monolith",
+    title: "Caching — Redis & CDN",
     category: "HLD",
-    subcategory: "Architecture",
+    subcategory: "Fundamentals",
     difficulty: "Intermediate",
-    summary: "Two fundamental ways to structure a backend — a single unified application vs many small independent services. Choosing wrong creates years of technical debt.",
-    concepts: [
-      "Monolithic Architecture — single deployable unit",
-      "Microservices — small independent services per domain",
-      "Service Communication — REST, gRPC, Message Queues",
-      "Service Discovery",
-      "When to migrate from Monolith to Microservices",
-    ],
-    content: {
-      problem: `PlacePrep started as one Express server handling everything — problems API, system design API, subjects API, authentication. As it grows to 100,000 users, one slow database query in the subjects section causes ALL APIs to slow down. Deploying a fix to the DSA section requires redeploying the entire backend including the unrelated subjects code. One bug in any feature can take down the whole platform. This is the monolith problem at scale.`,
-      sections: [
-        {
-          type: "comparison",
-          heading: "Monolith vs Microservices",
-          left: {
-            title: "Monolith",
-            subtitle: "Single Unit",
-            color: "blue",
-            description: "All features in one codebase, one deployable unit, one database.",
-            pros: [
-              "Simple to develop and debug",
-              "No network latency between modules",
-              "Easy to test end-to-end",
-              "Simple deployment — one thing to deploy",
-            ],
-            cons: [
-              "One bug can take down everything",
-              "Must redeploy entire app for any change",
-              "Hard to scale individual features",
-              "Codebase becomes unmanageable at scale",
-            ],
-            when: "Early stage, small team, under 10 engineers, MVP, startup",
-          },
-          right: {
-            title: "Microservices",
-            subtitle: "Independent Services",
-            color: "emerald",
-            description: "Each business domain is a separate service with its own database and deployment.",
-            pros: [
-              "Independent deployment per service",
-              "Fault isolation — one service down, others run",
-              "Scale individual services independently",
-              "Different tech stacks per service",
-            ],
-            cons: [
-              "Distributed systems complexity",
-              "Network latency between services",
-              "Hard to debug across services",
-              "Operational overhead — many services to manage",
-            ],
-            when: "Large teams, high scale, clear domain boundaries, after monolith pain",
-          },
-        },
-        {
-          type: "concept",
-          heading: "Service Communication",
-          body: "In a microservices architecture, services must talk to each other. Three main approaches: synchronous REST — one service calls another's HTTP endpoint and waits for response, simple but creates coupling. gRPC — binary protocol, faster than REST, used for internal service communication at Google scale. Asynchronous message queue (Kafka/RabbitMQ) — service publishes an event, other services consume it independently, no waiting, best for non-critical background work.",
-          analogy: {
-            emoji: "📞",
-            title: "Phone Call vs Text Message",
-            text: "Synchronous REST is a phone call — you call, wait for them to answer, have a conversation, hang up. If they do not answer, you are stuck waiting. Asynchronous messaging is a text message — you send it and immediately move on. They read and respond whenever they can. For urgent queries (get user profile before showing dashboard) use synchronous. For background work (send welcome email after signup) use async messaging.",
-          },
-          takeaway: "Use synchronous communication when the caller needs the response to continue. Use async messaging when the work can happen independently in the background.",
-        },
-        {
-          type: "concept",
-          heading: "The Strangler Fig Pattern — Migrating from Monolith",
-          body: "You rarely migrate from monolith to microservices all at once — that is a rewrite, which almost always fails. The Strangler Fig pattern migrates incrementally: identify one domain that is causing pain (e.g., auth service), extract it into a standalone service, route its traffic through an API gateway, leave everything else in the monolith. Repeat for the next painful domain. Over time, the monolith shrinks and microservices grow around it — like a strangler fig tree gradually replacing the host tree.",
-          analogy: {
-            emoji: "🌿",
-            title: "Building Renovation",
-            text: "You do not demolish your house to renovate it. You renovate one room at a time — kitchen first, then bedroom, then bathroom — while living in the rest. The Strangler Fig pattern does the same for software. Extract one service, deploy it, confirm it works, move to the next. You always have a working system, never a half-migrated disaster.",
-          },
-          takeaway: "Never rewrite a monolith from scratch. Extract services incrementally using the Strangler Fig pattern — one domain at a time, starting with the most painful.",
-        },
-        {
-          type: "algorithm",
-          heading: "When to Choose Each",
-          body: "The decision is not about which is better — it is about which is right for your current stage. Most successful microservices architectures started as monoliths. Amazon, Netflix, and Uber all started monolithic. They migrated to microservices only after hitting real scaling pain — not in anticipation of it.",
-          flow: [
-            { label: "Team < 10 engineers", target: "Monolith — microservices overhead kills productivity", color: "#7c3aed" },
-            { label: "Deployment bottleneck", target: "Extract the most-deployed service first", color: "#2563eb" },
-            { label: "Scaling bottleneck", target: "Extract the most resource-hungry service", color: "#059669" },
-            { label: "Team > 50 engineers", target: "Microservices — Conway's Law applies", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "🏗️",
-            title: "Studio Flat vs Apartment Building",
-            text: "A studio flat (monolith) is perfect for one person starting out — cheap, simple, everything in one place. As your family grows, a studio becomes painful — everyone shares everything and one person cooking affects everyone sleeping. You move to a house with separate rooms (microservices). But you would never build a 10-bedroom house before knowing if you need it.",
-          },
-          pros: "Monolith first approach is used by most successful tech companies — simpler start, migrate when pain is real.",
-          cons: "Migrating too late makes microservices extraction very hard — the longer you wait, the more tightly coupled the monolith becomes.",
-          takeaway: "Start monolith. Scale monolith. When specific pain points appear (deployment, scaling, team autonomy), extract those domains into services. Never start microservices from day one.",
-        },
-      ],
-    },
-    interviewTip: "Interviewers love the Strangler Fig pattern question — how would you migrate a monolith to microservices? Answer: incrementally, one domain at a time, starting with the most painful. Also mention Conway's Law — the architecture of a system tends to mirror the communication structure of the organization that built it. Large teams naturally produce microservices. Small teams naturally produce monoliths. Knowing this concept instantly elevates your answer.",
-    relatedTopics: ["Message Queues & Kafka", "Scalability & Load Balancing", "Rate Limiting"],
-    selfCheck: [
-      "What is the main difference between a monolith and microservices?",
-      "What are three advantages of microservices over a monolith?",
-      "What is the Strangler Fig pattern?",
-      "When should you NOT use microservices?",
-      "What is Conway's Law?",
-    ],
-    companyExamples: [
+    companies: ["Netflix", "Twitter/X", "Airbnb", "Google"],
+    summary: "Deep dive into caching strategies (Cache-Aside, Write-Through), eviction policies (LRU, LFU), and Redis clusters.",
+    videos: [
       {
-        company: "Netflix",
-        emoji: "🎬",
-        color: "rose",
-        example: "Netflix started as a monolith DVD rental website. As streaming grew, they migrated to microservices over several years — today they run over 700 microservices. Their migration was driven by deployment pain — releasing a bug fix required redeploying the entire monolith, causing outages. They now deploy thousands of times per day across independent services.",
+        title: "System Design Basics: Caching, Redis & Content Delivery Networks (CDN)",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=iuqZvajTOyA"
       },
       {
-        company: "Amazon",
-        emoji: "📦",
-        color: "amber",
-        example: "Amazon famously mandated that every team must expose its data and functionality through service APIs, with no exceptions. This internal API-first rule forced microservices naturally — teams could not share databases or call each other's code directly. Today Amazon runs millions of microservices. Jeff Bezos called this the two-pizza team rule — each service team should be small enough to be fed by two pizzas.",
-      },
-      {
-        company: "Shopify",
-        emoji: "🛍️",
-        color: "emerald",
-        example: "Shopify ran a Rails monolith for over a decade and scaled it to millions of merchants. They invested in modularizing the monolith rather than splitting into microservices — creating clear module boundaries within one codebase. This is called a Modular Monolith — a middle ground that avoids distributed systems complexity while still enforcing separation of concerns.",
-      },
-    ],
+        title: "Redis Caching & CDN Strategy System Design in Hindi",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=O15e6S02p6I"
+      }
+    ]
   },
   {
     id: 8,
-    title: "Consistent Hashing",
+    title: "Databases — SQL vs NoSQL",
     category: "HLD",
-    subcategory: "Advanced",
-    difficulty: "Advanced",
-    summary: "A technique for distributing data across multiple servers such that adding or removing servers causes minimal data redistribution.",
-    concepts: [
-      "Hash Ring — circular space of hash values",
-      "Virtual Nodes — multiple positions per server",
-      "Minimal Redistribution on Server Change",
-      "Used in distributed caches and databases",
-      "Load Balancing with Consistent Hashing",
-    ],
-    content: {
-      problem: `PlacePrep now uses a Redis cluster with 4 servers to cache problems. You use simple modulo hashing — user_id % 4 determines which server caches their data. Now one server dies. With modulo hashing, user_id % 3 maps almost all existing cache entries to different servers — nearly 100% cache miss rate. You just lost your entire cache and hammered the database. Adding a new server causes the same problem. Consistent hashing solves exactly this.`,
-      sections: [
-        {
-          type: "concept",
-          heading: "The Problem with Simple Modulo Hashing",
-          body: "With N servers, user_id % N determines which server stores data. This works perfectly — until N changes. Adding or removing one server changes N, which changes almost every key's mapping. If you have 1 million cached keys and add one server, roughly 750,000 keys (75%) map to different servers — causing a massive cache miss storm and database overload. Consistent hashing solves this by ensuring only K/N keys need to be remapped when adding or removing a server (K = total keys, N = number of servers).",
-          analogy: {
-            emoji: "🎯",
-            title: "Assigning Students to Classrooms",
-            text: "Simple modulo: 100 students assigned to 4 classrooms by student_number % 4. A classroom closes — now student_number % 3. Almost every student moves to a different classroom. Total chaos. Consistent hashing: arrange classrooms in a circle. Each student walks clockwise to the nearest classroom. One classroom closes — only that classroom's students need to move to the next clockwise classroom. Everyone else stays put.",
-          },
-          takeaway: "Simple modulo hashing is fine for fixed server counts. The moment server count changes, it causes catastrophic cache invalidation. Consistent hashing limits disruption to only the keys that must move.",
-        },
-        {
-          type: "concept",
-          heading: "The Hash Ring",
-          body: "Consistent hashing maps both server IDs and cache keys onto a circular ring of hash values (0 to 2^32 - 1). Each server occupies a position on the ring. To find which server stores a key, hash the key to a position on the ring and walk clockwise until you hit a server. Adding a server: insert it at a position on the ring — only keys between the new server and its predecessor need to move. Removing a server: its keys move to the next clockwise server — all other keys are unaffected.",
-          analogy: {
-            emoji: "💍",
-            title: "Circular Seating Arrangement",
-            text: "Imagine servers seated around a circular table. Each request (key) is assigned a seat number. The request is served by the nearest server clockwise from their seat. A server leaves — only the requests at their section of the table move to the next server clockwise. Everyone else is unaffected. A new server joins — they take a seat and handle requests in their new section. Only that section's requests move.",
-          },
-          takeaway: "The hash ring ensures that when a server joins or leaves, only the keys in that server's immediate range need to be redistributed — not all keys across all servers.",
-        },
-        {
-          type: "concept",
-          heading: "Virtual Nodes — Solving Uneven Distribution",
-          body: "With few servers, physical placement on the ring can be uneven — one server might handle 60% of the traffic while others handle 20% and 20%. Virtual nodes solve this by giving each physical server multiple positions on the ring (e.g., 150 virtual nodes per server). The hash space is divided more evenly. When a server is added or removed, its virtual nodes are spread around the ring, distributing the load change evenly across all remaining servers.",
-          analogy: {
-            emoji: "🗺️",
-            title: "Multiple Post Office Branches",
-            text: "Instead of one post office per neighborhood (uneven load if neighborhoods are different sizes), put multiple small collection points per area. Each physical post office runs 10 collection boxes spread across the city. Mail goes to the nearest collection box then routes to the post office. Traffic is naturally balanced because collection boxes are evenly distributed.",
-          },
-          takeaway: "Always use virtual nodes in production consistent hashing. Without them, non-uniform distribution causes some servers to be overloaded while others are idle.",
-        },
-        {
-          type: "algorithm",
-          heading: "Where Consistent Hashing is Used",
-          body: "Consistent hashing appears everywhere distributed data needs to be partitioned across nodes that can change over time.",
-          flow: [
-            { label: "Redis Cluster", target: "16,384 hash slots distributed across nodes using consistent hashing", color: "#dc2626" },
-            { label: "Cassandra", target: "Data partitioned by token ring — each node owns a range of the ring", color: "#7c3aed" },
-            { label: "CDN", target: "Route requests to nearest CDN node based on consistent hash of URL", color: "#2563eb" },
-            { label: "Load Balancer", target: "IP Hashing in NGINX uses consistent hashing for session persistence", color: "#059669" },
-          ],
-          analogy: {
-            emoji: "🌐",
-            title: "Internet Traffic Routing",
-            text: "CDNs use consistent hashing to decide which edge server caches which URL. When Cloudflare adds a new edge server in Mumbai, only URLs that hash to that server's ring segment need to be fetched from origin — millions of other cached URLs stay exactly where they are on other servers. Without consistent hashing, adding one server would invalidate the entire global CDN cache.",
-          },
-          pros: "Minimal data redistribution on topology changes. Even load with virtual nodes. Scales horizontally with minimal operational disruption.",
-          cons: "More complex to implement than simple modulo. Virtual nodes require careful tuning. Hot spots can still occur with skewed key distributions.",
-          takeaway: "Consistent hashing is the standard solution for partitioning data across a dynamic set of servers. If an interview involves distributed caching or databases with changing node counts, mention it.",
-        },
-      ],
-    },
-    interviewTip: "Consistent hashing appears in almost every distributed systems design interview. Two key points to always mention: the hash ring concept (keys and servers both mapped to a circular space, keys served by nearest clockwise server) and virtual nodes (each physical server has multiple ring positions for even distribution). Then mention real systems that use it — Redis Cluster, Cassandra, Memcached. This shows you understand both the theory and the practical implementation.",
-    relatedTopics: ["Caching — Redis & CDN", "Databases — SQL vs NoSQL", "Scalability & Load Balancing"],
-    selfCheck: [
-      "What is wrong with simple modulo hashing when servers change?",
-      "How does the hash ring work?",
-      "What are virtual nodes and why are they needed?",
-      "When a server is removed in consistent hashing, which keys must move?",
-      "Name two real systems that use consistent hashing.",
-    ],
-    companyExamples: [
+    subcategory: "Fundamentals",
+    difficulty: "Intermediate",
+    companies: ["Instagram", "Uber", "LinkedIn", "Amazon"],
+    summary: "Understand when to choose relational databases (PostgreSQL, MySQL) vs NoSQL document/key-value stores (MongoDB, Cassandra, DynamoDB).",
+    videos: [
       {
-        company: "Amazon DynamoDB",
-        emoji: "📦",
-        color: "amber",
-        example: "DynamoDB partitions data using consistent hashing on the partition key. Each partition handles a range of the hash space. When DynamoDB automatically splits a hot partition, it uses consistent hashing to redistribute only that partition's data — other partitions are completely unaffected. This enables DynamoDB to scale seamlessly without any downtime.",
+        title: "SQL vs NoSQL Databases: How to Choose for System Design",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=z0S1_-T_a0A"
       },
       {
-        company: "Discord",
-        emoji: "💬",
-        color: "violet",
-        example: "Discord uses consistent hashing to assign users to their message servers. When a user joins a voice channel, consistent hashing determines which server manages that channel. When servers are added for capacity, only a fraction of channels migrate — not all of them. This is critical for Discord's real-time messaging where remigrating all channels would cause mass disconnections.",
-      },
-      {
-        company: "Akamai CDN",
-        emoji: "🌐",
-        color: "blue",
-        example: "Akamai invented consistent hashing in 1997 specifically for their CDN. Their paper 'Consistent Hashing and Random Trees' introduced the algorithm. They needed a way to distribute web content across thousands of edge servers globally such that adding new servers (which happens constantly) would not invalidate the entire distributed cache.",
-      },
-    ],
+        title: "SQL vs NoSQL System Design Explained in Hindi",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=v3M8sTqP31c"
+      }
+    ]
   },
   {
     id: 9,
-    title: "Design URL Shortener",
+    title: "CAP Theorem & PACELC",
     category: "HLD",
-    subcategory: "Case Study",
+    subcategory: "Distributed Systems",
     difficulty: "Intermediate",
-    summary: "A classic system design interview question. Design a service like bit.ly that converts long URLs to short codes and redirects users correctly at scale.",
-    concepts: [
-      "Base62 Encoding for Short Codes",
-      "Hashing vs Counter-based ID Generation",
-      "Redirect — 301 vs 302",
-      "Analytics Tracking",
-      "Scaling to Billions of URLs",
-    ],
-    content: {
-      problem: `Design a URL shortener like bit.ly. Requirements: given a long URL, generate a unique short code (e.g. plprp.co/a3kX9). When a user visits the short URL, redirect to the original. System must handle 100 million URLs created per day and 10 billion redirects per day. Short codes must be unique, not predictable, and ideally 6-7 characters. Analytics must track how many times each short URL was clicked.`,
-      sections: [
-        {
-          type: "concept",
-          heading: "Step 1 — Clarify Requirements",
-          body: "Before drawing any architecture, always clarify. Functional requirements: shorten URL, redirect short URL to original, optional custom alias, optional expiry. Non-functional: high availability (redirect must never fail), low latency (redirect under 10ms), scale (100M URLs/day = ~1,200 writes/sec, 10B redirects/day = ~115,000 reads/sec). This is read-heavy — 100:1 read-to-write ratio. The architecture must optimize for reads.",
-          analogy: {
-            emoji: "📋",
-            title: "Interview Framework",
-            text: "Think of clarifying requirements like a doctor taking symptoms before diagnosing. You would not prescribe treatment without understanding the problem fully. In system design, jumping to architecture before clarifying scale, requirements, and constraints is the single most common mistake that signals inexperience to interviewers.",
-          },
-          takeaway: "Always spend the first 5 minutes clarifying requirements in a system design interview. Interviewers are testing whether you ask the right questions before architecting.",
-        },
-        {
-          type: "algorithm",
-          heading: "Short Code Generation — Base62 Encoding",
-          body: "Each URL needs a unique 6-7 character code from [a-z, A-Z, 0-9] = 62 characters. 62^6 = 56 billion combinations — more than enough. Two approaches: hash-based (MD5/SHA256 the long URL, take first 6 chars) or counter-based (auto-increment a global counter, convert to base62). Counter-based is better — guaranteed unique, no collision handling needed.",
-          flow: [
-            { label: "Long URL arrives", target: "Generate unique ID from counter: 12345678", color: "#7c3aed" },
-            { label: "Convert to Base62", target: "12345678 → 'dnh75K' (6 chars)", color: "#2563eb" },
-            { label: "Store mapping", target: "dnh75K → https://placeprep.vercel.app/dsa", color: "#059669" },
-            { label: "User visits /dnh75K", target: "Lookup in Redis → 302 redirect", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "🔢",
-            title: "Number to Short Code",
-            text: "Base62 is like converting a decimal number to a different base — similar to how hexadecimal uses 0-9 and A-F. Base62 uses 0-9, a-z, A-Z. The number 999999 in base 62 is '4c91' — only 4 characters. As the counter grows, the code grows too, but stays short for billions of URLs.",
-          },
-          pros: "Guaranteed unique with counter-based approach. Predictable code length. No hash collision handling needed.",
-          cons: "Counter must be globally unique — needs coordination across servers. Sequential IDs are predictable (someone could enumerate URLs).",
-          takeaway: "Use a distributed counter (like Redis INCR or a dedicated ID service) combined with Base62 encoding. This is simpler and more reliable than hashing.",
-        },
-        {
-          type: "concept",
-          heading: "301 vs 302 Redirect",
-          body: "When a user visits a short URL, the server returns either 301 (Permanent Redirect) or 302 (Temporary Redirect). 301 tells the browser to cache the redirect permanently — future visits go directly to the long URL without hitting your server. Good for reducing load but you lose analytics tracking. 302 tells the browser the redirect is temporary — every visit hits your server first, allowing you to track each click. For analytics use 302. For CDN performance use 301. Most URL shorteners use 302 for analytics.",
-          analogy: {
-            emoji: "🚦",
-            title: "Permanent vs Temporary Sign",
-            text: "301 is like a permanent road sign — the GPS saves the new route and never asks your server again. Fast but you cannot track how many cars pass. 302 is a temporary detour sign — every car checks in at the detour sign before being redirected. Slower but you know exactly how many cars used the route.",
-          },
-          takeaway: "Use 302 for URL shorteners that track analytics. Use 301 only when you never need to change the destination or track clicks.",
-        },
-        {
-          type: "algorithm",
-          heading: "Architecture at Scale",
-          body: "The system is 100:1 read-heavy. Optimize everything for reads. Cache hot URLs in Redis — 80% of traffic goes to 20% of URLs (Pareto principle). The database only gets hit on cache miss.",
-          flow: [
-            { label: "User visits short URL", target: "Load Balancer → Web Server", color: "#7c3aed" },
-            { label: "Check Redis cache", target: "Cache hit → 302 redirect (sub-millisecond)", color: "#059669" },
-            { label: "Cache miss", target: "Query database → store in Redis → redirect", color: "#d97706" },
-            { label: "Write new URL", target: "Web Server → Counter Service → Database → Cache", color: "#2563eb" },
-          ],
-          analogy: {
-            emoji: "📚",
-            title: "Librarian with Desk Reference",
-            text: "A librarian keeps the 20 most-requested books on their desk (Redis cache). Most patrons get served instantly from the desk. Occasionally someone requests a rare book — the librarian goes to the stacks (database), gets it, and puts it on the desk for next time. The stacks only get visited for rare requests.",
-          },
-          pros: "Redis cache absorbs 99% of redirect traffic. Database only handles writes and cache misses. Horizontally scalable by adding web servers and Redis replicas.",
-          cons: "Cache invalidation needed when URL expires or is deleted. Counter service must be highly available — single point of failure if not replicated.",
-          takeaway: "The URL shortener is deceptively simple but reveals deep knowledge of caching, ID generation, and read optimization. It is a perfect interview question because it has just enough complexity to show what you know.",
-        },
-      ],
-    },
-    interviewTip: "URL Shortener is asked in roughly 30% of system design interviews. The examiner is testing whether you know: Base62 encoding for short codes, why counter-based is better than hash-based, 301 vs 302 trade-off, and how to handle the 100:1 read-to-write ratio with Redis. Walk through these four points clearly and you will have covered 90% of what they want to hear. Bonus: mention that the counter service itself needs to be distributed (using something like Snowflake IDs or a Redis INCR cluster) to avoid a single point of failure.",
-    relatedTopics: ["Caching — Redis & CDN", "Databases — SQL vs NoSQL", "Consistent Hashing"],
-    selfCheck: [
-      "What is Base62 encoding and why is it used for short codes?",
-      "Why is counter-based ID generation better than hash-based?",
-      "What is the difference between 301 and 302 redirect?",
-      "Why is the read-to-write ratio important for this system?",
-      "How would you handle URL expiry?",
-    ],
-    companyExamples: [
+    companies: ["Google", "Amazon", "Microsoft", "Uber"],
+    summary: "Master Consistency, Availability, and Partition Tolerance in distributed database systems.",
+    videos: [
       {
-        company: "bit.ly",
-        emoji: "🔗",
-        color: "rose",
-        example: "bit.ly handles over 10 billion monthly clicks. They use a distributed counter for ID generation, Base62 for encoding, and Redis for caching hot URLs. Their analytics pipeline processes every redirect through Kafka — each click is an event consumed by analytics services in real time. They use 302 redirects so every click goes through their servers for tracking.",
+        title: "CAP Theorem & PACELC Theorem Explained in Distributed Systems",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=k-Yaq8AHlBU"
       },
       {
-        company: "Twitter (t.co)",
-        emoji: "🐦",
-        color: "blue",
-        example: "Twitter wraps every URL in a tweet with t.co, their URL shortener. This lets them track link clicks, scan URLs for malware, and measure engagement. Every t.co link is a 302 redirect — Twitter sees every click. They pre-generate short codes in batches during off-peak hours and store them as a pool, avoiding real-time ID generation latency during peak tweet traffic.",
-      },
-      {
-        company: "Google (goo.gl)",
-        emoji: "🔍",
-        color: "emerald",
-        example: "Google shut down goo.gl in 2019, citing the rise of app-specific tools. At peak they processed billions of redirects daily. They used a global distributed counter with Spanner (their globally-consistent database) for ID generation — ensuring no duplicate short codes even across multiple data centers worldwide.",
-      },
-    ],
+        title: "CAP Theorem System Design Concept in Hindi",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=BHw3-X-X33s"
+      }
+    ]
   },
   {
     id: 10,
-    title: "Design Twitter Feed",
+    title: "Message Queues & Kafka",
     category: "HLD",
-    subcategory: "Case Study",
-    difficulty: "Advanced",
-    summary: "Design the system that generates and displays a user's Twitter home timeline — one of the most complex feed generation problems in distributed systems.",
-    concepts: [
-      "Fan-out on Write vs Fan-out on Read",
-      "Timeline Cache per User",
-      "Celebrity Problem",
-      "Hybrid Approach",
-      "Eventual Consistency in Feeds",
-    ],
-    content: {
-      problem: `Design Twitter's home feed — when a user opens Twitter, they see tweets from everyone they follow, ranked by time. Scale: 300 million active users, 500 million tweets per day, average user follows 200 accounts. When a celebrity with 50 million followers tweets, all 50 million followers' feeds must update. When you tweet, your 200 followers' feeds must update. Two completely different scale problems that require different solutions.`,
-      sections: [
-        {
-          type: "comparison",
-          heading: "Fan-out on Write vs Fan-out on Read",
-          left: {
-            title: "Fan-out on Write",
-            subtitle: "Push Model",
-            color: "blue",
-            description: "When a tweet is posted, immediately push it to all followers' feed caches.",
-            pros: [
-              "Reading feed is instant — pre-computed",
-              "Simple read — just fetch from cache",
-              "Low read latency for all users",
-            ],
-            cons: [
-              "Celebrity tweets 50M followers → 50M cache writes",
-              "Massive write amplification",
-              "Wasted work for inactive followers",
-            ],
-            when: "Regular users with moderate follower counts",
-          },
-          right: {
-            title: "Fan-out on Read",
-            subtitle: "Pull Model",
-            color: "emerald",
-            description: "When a user opens their feed, query tweets from all followed accounts in real time.",
-            pros: [
-              "No write amplification",
-              "No wasted computation for inactive users",
-              "Simple write path",
-            ],
-            cons: [
-              "Slow feed generation — query 200 accounts",
-              "High read latency especially for power users",
-              "Database hammered on every feed open",
-            ],
-            when: "Celebrity accounts with massive follower counts",
-          },
-        },
-        {
-          type: "concept",
-          heading: "The Celebrity Problem",
-          body: "Fan-out on Write fails for celebrities. When Elon Musk (150M followers) tweets, fan-out on write must write to 150 million cache entries — this takes minutes and overwhelms the system. But fan-out on read fails for regular users — querying 200 accounts in real time is slow. Twitter's solution: hybrid approach. Regular users (< 1M followers) use fan-out on write. Celebrity accounts use fan-out on read. When loading a feed, merge the pre-computed regular-user tweets with real-time celebrity tweets.",
-          analogy: {
-            emoji: "⚡",
-            title: "TV Broadcast vs Personal Message",
-            text: "Regular user tweet is like a personal message — you push it directly to 200 inboxes (fan-out on write). Celebrity tweet is like a TV broadcast — you do not personally message 50 million people. You broadcast from a tower and people tune in when they want to watch (fan-out on read). Different distribution mechanisms for different scales of audience.",
-          },
-          takeaway: "The hybrid approach is what Twitter actually uses. This is the answer interviewers want — showing you understand that one solution does not fit all users in a social network.",
-        },
-        {
-          type: "algorithm",
-          heading: "Feed Generation Architecture",
-          body: "When a user opens Twitter: fetch pre-computed timeline from Redis cache (contains tweets from non-celebrity followees). For each celebrity they follow, fetch latest tweets from their tweet cache in real time. Merge and rank by timestamp. Return top 20 tweets. The pre-computed timeline is maintained by a fan-out service that processes tweets asynchronously via Kafka.",
-          flow: [
-            { label: "User tweets", target: "Write to Tweets DB + publish to Kafka", color: "#7c3aed" },
-            { label: "Fan-out service", target: "Consumes event → pushes to followers' Redis caches", color: "#2563eb" },
-            { label: "User opens feed", target: "Fetch pre-computed cache + real-time celebrity tweets", color: "#059669" },
-            { label: "Merge + rank", target: "Combine both sources by timestamp → return top 20", color: "#d97706" },
-          ],
-          analogy: {
-            emoji: "📰",
-            title: "Newspaper + Breaking News",
-            text: "Your newspaper (pre-computed feed) is delivered every morning with yesterday's stories from regular contributors already printed (fan-out on write). But for breaking news from major celebrities, the paper cannot wait — you check a live ticker when you open the paper (fan-out on read). The final experience combines both — your pre-printed paper plus real-time breaking news.",
-          },
-          pros: "Handles both celebrity and regular user cases optimally. Pre-computed feeds give fast reads for most content. Real-time fetch for celebrities is manageable since users typically follow few celebrities.",
-          cons: "Complex to implement and maintain. Two different code paths for tweet distribution. Merging and ranking adds latency. Eventual consistency — feed might be slightly stale.",
-          takeaway: "The hybrid fan-out approach is the core answer to the Twitter feed design question. Know it deeply — it demonstrates understanding of the most important trade-off in social feed systems.",
-        },
-        {
-          type: "concept",
-          heading: "Eventual Consistency in Feeds",
-          body: "Twitter's feed is eventually consistent — not every follower sees a tweet at exactly the same moment. When you tweet, your 200 followers' caches update over seconds to minutes depending on load. This is acceptable because social feeds do not require strict consistency — seeing a tweet 30 seconds late is fine. Twitter chooses availability (AP in CAP theorem) — feeds always load, might be slightly stale. This is the right trade-off for social content.",
-          analogy: {
-            emoji: "📡",
-            title: "Radio Broadcast",
-            text: "When a radio station broadcasts, people near the tower hear it immediately. People far away hear it slightly later due to signal travel time. In extreme cases, some people might not receive the signal at all. No radio station guarantees that all listeners hear the broadcast simultaneously — and nobody complains. Social feeds work the same way.",
-          },
-          takeaway: "Social feeds are a textbook use case for eventual consistency. Never design a social feed with strict consistency — the cost is prohibitive and the benefit to users is zero.",
-        },
-      ],
-    },
-    interviewTip: "The Twitter feed question tests whether you know fan-out on write vs fan-out on read and the celebrity problem. The complete answer: use fan-out on write for regular users (stored in Redis per-user timeline cache), fan-out on read for celebrities (query at read time), and merge on load. Mention Kafka for async fan-out processing, Redis for timeline storage, and eventual consistency as an acceptable trade-off. This four-part answer covers everything the interviewer wants to hear.",
-    relatedTopics: ["Message Queues & Kafka", "Caching — Redis & CDN", "Scalability & Load Balancing"],
-    selfCheck: [
-      "What is fan-out on write? What is fan-out on read?",
-      "What is the celebrity problem and why does it matter?",
-      "How does Twitter's hybrid approach solve the celebrity problem?",
-      "Why is eventual consistency acceptable for social feeds?",
-      "What role does Kafka play in the Twitter feed architecture?",
-    ],
-    companyExamples: [
+    subcategory: "Messaging",
+    difficulty: "Intermediate",
+    companies: ["LinkedIn", "Uber", "Netflix", "PayPal"],
+    summary: "Asynchronous processing, message broker patterns, publish-subscribe queues, and Apache Kafka architecture.",
+    videos: [
       {
-        company: "Twitter",
-        emoji: "🐦",
-        color: "blue",
-        example: "Twitter actually uses the exact hybrid approach described here. They call their per-user timeline cache the 'timeline service' stored in Redis. Regular user tweets are fanned out by a service called 'Flock'. Celebrity tweets (they call them 'high-fan-out accounts') are fetched at read time. The merge happens in the timeline service before returning results to the client. This architecture handles 300 billion timeline reads per day.",
+        title: "System Design: Message Queues & Apache Kafka Architecture",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=G4IttPzC1qA"
       },
       {
-        company: "Instagram",
-        emoji: "📸",
-        color: "rose",
-        example: "Instagram's feed is more complex than Twitter's because it is algorithmically ranked, not just chronological. They use fan-out on write for regular accounts and fan-out on read for celebrities, similar to Twitter. The ranking layer then scores each candidate post using an ML model that considers recency, relationship strength, post engagement rate, and user behavior history before ordering the final feed.",
-      },
-      {
-        company: "LinkedIn",
-        emoji: "💼",
-        color: "emerald",
-        example: "LinkedIn's feed handles a unique challenge — posts have longer relevance windows than tweets (a LinkedIn post stays relevant for days, not hours). Their fan-out service prioritizes freshness for active users and delays fan-out for inactive users. If you have not opened LinkedIn in a week, your feed is computed fresh when you return rather than maintained continuously in cache — saving significant compute for inactive accounts.",
-      },
-    ],
+        title: "Message Queues & Kafka System Design in Hindi",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=R873BlNVUB4"
+      }
+    ]
   },
+  {
+    id: 11,
+    title: "Microservices Architecture",
+    category: "LLD",
+    subcategory: "Fundamentals",
+    difficulty: "Intermediate",
+    companies: ["Amazon", "Netflix", "Uber", "DoorDash"],
+    summary: "Decomposing monoliths, API gateway routing, service discovery, distributed tracing, and fault tolerance.",
+    videos: [
+      {
+        title: "Microservices Architecture & Monolith vs Microservices",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=rv4LlmLmVWk"
+      },
+      {
+        title: "Microservices System Design in Hindi | Low-Level & High-Level Architecture",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=1xDEde9T7bM"
+      }
+    ]
+  },
+  {
+    id: 12,
+    title: "Consistent Hashing",
+    category: "LLD",
+    subcategory: "Fundamentals",
+    difficulty: "Intermediate",
+    companies: ["Amazon", "Discord", "Akamai", "Google"],
+    summary: "Distributed hash rings, virtual nodes, and efficient data partitioning across dynamic server clusters.",
+    videos: [
+      {
+        title: "System Design: Consistent Hashing Distributed Systems",
+        language: "English",
+        url: "https://www.youtube.com/watch?v=zaRkONvyl8s"
+      },
+      {
+        title: "Consistent Hashing Algorithm System Design in Hindi",
+        language: "Hindi",
+        url: "https://www.youtube.com/watch?v=UF9Iq6y1G3I"
+      }
+    ]
+  }
 ];
 
 export default systemDesignTopics;
