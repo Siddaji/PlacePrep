@@ -6,7 +6,7 @@ import subjectRoutes from "./src/routes/subjectRoutes.js";
 import roadmapRoutes from "./src/routes/roadmapRoutes.js"; 
 import companyProblemRoutes from "./src/routes/companyProblemRoutes.js";
 import oopRoutes from "./src/routes/oopRoutes.js";
- 
+import {OOP_MODULES} from "./src/data/oopData.js";
 
 const app = express();
 
@@ -23,10 +23,13 @@ app.use("/api/system-design", systemDesignRoutes);
 app.use("/api/subjects", subjectRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/company-problems", companyProblemRoutes); 
-app.use("/api/oop", oopRoutes);
 
 app.get("/", (req, res) => {
   res.send("PlacePrep backend is running");
+});
+
+app.get("/api/oop", (req, res) => {
+  res.json(OOP_MODULES);
 });
 
 const PORT = process.env.PORT || 5000;

@@ -172,14 +172,14 @@ function HomePage() {
 
               <Link
                 to="/company-dsa"
-                className="inline-flex items-center gap-2 rounded-lg border border-[#27272A] bg-[#121212] hover:bg-zinc-800 text-zinc-200 px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A]  text-black px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
               >
                 Company DSA
               </Link>
 
               <Link
                 to="/subjects"
-                className="inline-flex items-center gap-2 rounded-lg border border-[#27272A] bg-transparent hover:bg-zinc-900 text-zinc-300 hover:text-white px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A]  text-black  px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
               >
                 Core CS Subjects
               </Link>

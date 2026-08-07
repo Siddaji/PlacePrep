@@ -1,5 +1,3 @@
-import { OOP_MODULES } from "../data/oopData.js";
-
 const API_BASE = import.meta.env.VITE_API_URL || "";
 const BASE_URL = `${API_BASE}/api/oop`;
 
