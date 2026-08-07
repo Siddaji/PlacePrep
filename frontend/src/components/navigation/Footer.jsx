@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 const links = [
   { to: "/dsa",           label: "DSA Tracker" },
+  { to: "/company-dsa",   label: "Company DSA" },
   { to: "/system-design", label: "System Design" },
   { to: "/subjects",      label: "Core Subjects" },
   { to: "/roadmap",       label: "8-Week Roadmap" },
@@ -11,36 +12,38 @@ function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-gray-800 bg-gray-950 mt-auto">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <footer className="border-t border-[#27272A] bg-[#0B0B0B] mt-auto">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-12 sm:py-14">
 
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
 
           {/* logo + tagline */}
-          <div className="max-w-xs">
-            <Link to="/" className="flex items-center gap-2 w-fit">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-violet-400 text-white font-bold text-sm shadow-lg shadow-violet-500/20">
+          <div className="max-w-sm space-y-3">
+            <Link to="/" className="flex items-center gap-2.5 w-fit">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-zinc-100 text-black font-bold text-sm">
                 P
               </div>
-              <span className="text-base font-bold text-gray-100">PlacePrep</span>
+              <span className="text-base font-bold tracking-tight text-[#F5F5F5]">
+                PlacePrep
+              </span>
             </Link>
-            <p className="mt-3 text-sm text-gray-500 leading-relaxed">
-              Structured placement prep for serious students.
-              DSA, System Design, and Core CS — all in one place.
+            <p className="text-sm sm:text-[15px] text-zinc-400 leading-relaxed">
+              Structured placement prep for engineering candidates.
+              DSA, System Design, and Core CS — curated and organized.
             </p>
           </div>
 
           {/* quick links */}
           <div>
-            <p className="text-xs font-semibold text-gray-600 uppercase tracking-widest mb-3">
-              Quick Links
+            <p className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3">
+              Platform
             </p>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-2.5">
               {links.map(link => (
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="text-sm text-gray-500 hover:text-violet-400 transition-colors"
+                    className="text-sm sm:text-[15px] text-zinc-400 hover:text-white transition-colors"
                   >
                     {link.label}
                   </Link>
@@ -52,13 +55,9 @@ function Footer() {
         </div>
 
         {/* bottom bar */}
-        <div className="mt-8 pt-6 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-gray-600">
-            © {year} PlacePrep. Built for students, by a student.
-          </p>
-          <p className="text-xs text-gray-600">
-            DSA · System Design · Core CS
-          </p>
+        <div className="mt-12 pt-6 border-t border-[#27272A] flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-zinc-400">
+          <p>© {year} PlacePrep. Built for engineering candidates.</p>
+          <p className="font-mono text-xs sm:text-sm text-zinc-400">DSA · System Design · CS Core</p>
         </div>
 
       </div>

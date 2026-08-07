@@ -106,31 +106,31 @@ export default function SystemDesignPage() {
   const lldCount = topics.filter(t => t.category === "LLD").length;
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans selection:bg-zinc-800 pb-20">
+    <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] font-sans pb-20">
       
       {/* Top Header Banner */}
-      <div className="border-b border-zinc-800 bg-[#0c0c0e]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <div className="border-b border-[#27272A] bg-[#0B0B0B]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs text-zinc-400 mb-1.5 font-mono">
+              <div className="flex items-center gap-1.5 text-sm text-zinc-400 mb-2 font-mono">
                 <Link to="/" className="hover:text-zinc-200 transition-colors">
                   Home
                 </Link>
-                <ChevronRight className="w-3.5 h-3.5 text-zinc-600" />
+                <ChevronRight className="w-4 h-4 text-zinc-500" />
                 <span className="text-zinc-200 font-medium">System Design</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
-                <Film className="w-7 h-7 text-blue-500" />
+              <h1 className="text-3xl sm:text-[36px] font-bold tracking-tight text-[#F5F5F5] flex items-center gap-3">
+                <Film className="w-7 h-7 text-zinc-300" />
                 <span>System Design Video Lessons</span>
               </h1>
-              <p className="text-xs sm:text-sm text-zinc-400 mt-1 max-w-3xl leading-relaxed">
-                Master High-Level Design (HLD) and Low-Level Design (LLD) questions asked in top tech companies with curated video lessons.
+              <p className="text-sm sm:text-base text-zinc-300 mt-2 max-w-3xl leading-relaxed">
+                Master High-Level Design (HLD) and Low-Level Design (LLD) concepts asked in technical interviews with curated video lessons.
               </p>
             </div>
 
             {/* Overall Progress Meter */}
-            <div className="hidden md:flex items-center gap-4 p-3 rounded-xl border border-zinc-800 bg-zinc-900/60 shrink-0">
+            <div className="hidden md:flex items-center gap-4 p-4 rounded-xl border border-[#27272A] bg-[#121212] shrink-0">
               <div className="relative w-12 h-12 shrink-0 flex items-center justify-center">
                 <svg className="w-12 h-12 transform -rotate-90">
                   <circle
@@ -150,21 +150,21 @@ export default function SystemDesignPage() {
                     strokeWidth="3.5"
                     strokeDasharray={120}
                     strokeDashoffset={120 - (120 * progressPct) / 100}
-                    className="text-blue-500 transition-all duration-500"
+                    className="text-white transition-all duration-300"
                     strokeLinecap="round"
                     fill="transparent"
                   />
                 </svg>
-                <span className="absolute text-[11px] font-bold text-white">{progressPct}%</span>
+                <span className="absolute text-xs font-mono font-bold text-white">{progressPct}%</span>
               </div>
               <div>
-                <div className="text-xs font-semibold text-white">Progress</div>
-                <div className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                <div className="text-sm font-semibold text-white">Progress</div>
+                <div className="text-xs text-zinc-400 font-mono mt-0.5">
                   {studiedCount}/{totalTopics} completed
                 </div>
                 {streak.count > 0 && (
-                  <div className="inline-flex items-center gap-1 text-[10px] text-amber-400 font-medium mt-0.5 font-mono">
-                    <Flame className="w-3 h-3 fill-current" />
+                  <div className="inline-flex items-center gap-1 text-xs text-amber-400 font-medium mt-0.5 font-mono">
+                    <Flame className="w-3.5 h-3.5 fill-current" />
                     <span>{streak.count}d streak</span>
                   </div>
                 )}
@@ -175,22 +175,22 @@ export default function SystemDesignPage() {
       </div>
 
       {/* Control Bar: Category Filters & Search Input */}
-      <div className="sticky top-0 z-30 border-b border-zinc-800 bg-[#09090b]/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+      <div className="sticky top-[64px] z-20 border-b border-[#27272A] bg-[#0B0B0B]/90 backdrop-blur">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
           
           {/* Filter Pills */}
           <div className="flex items-center gap-2 overflow-x-auto">
             <button
               onClick={() => setCategoryFilter("ALL")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                 categoryFilter === "ALL"
-                  ? "bg-blue-600 text-white shadow-sm font-semibold"
-                  : "bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-zinc-800 text-white border border-zinc-700"
+                  : "bg-[#121212] text-zinc-300 border border-[#27272A] hover:text-white hover:border-zinc-700"
               }`}
             >
               <span>All Topics</span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
-                categoryFilter === "ALL" ? "bg-blue-700 text-white" : "bg-zinc-700 text-zinc-300"
+              <span className={`px-1.5 py-0.5 rounded text-xs font-mono ${
+                categoryFilter === "ALL" ? "bg-zinc-700 text-white" : "bg-zinc-900 text-zinc-400"
               }`}>
                 {totalTopics}
               </span>
@@ -198,15 +198,15 @@ export default function SystemDesignPage() {
 
             <button
               onClick={() => setCategoryFilter("HLD")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                 categoryFilter === "HLD"
-                  ? "bg-blue-600 text-white shadow-sm font-semibold"
-                  : "bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-zinc-800 text-white border border-zinc-700"
+                  : "bg-[#121212] text-zinc-300 border border-[#27272A] hover:text-white hover:border-zinc-700"
               }`}
             >
               <span>HLD</span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
-                categoryFilter === "HLD" ? "bg-blue-700 text-white" : "bg-zinc-700 text-zinc-300"
+              <span className={`px-1.5 py-0.5 rounded text-xs font-mono ${
+                categoryFilter === "HLD" ? "bg-zinc-700 text-white" : "bg-zinc-900 text-zinc-400"
               }`}>
                 {hldCount}
               </span>
@@ -214,15 +214,15 @@ export default function SystemDesignPage() {
 
             <button
               onClick={() => setCategoryFilter("LLD")}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2 cursor-pointer ${
                 categoryFilter === "LLD"
-                  ? "bg-purple-600 text-white shadow-sm font-semibold"
-                  : "bg-zinc-800/80 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-zinc-800 text-white border border-zinc-700"
+                  : "bg-[#121212] text-zinc-300 border border-[#27272A] hover:text-white hover:border-zinc-700"
               }`}
             >
               <span>LLD</span>
-              <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono ${
-                categoryFilter === "LLD" ? "bg-purple-700 text-white" : "bg-zinc-700 text-zinc-300"
+              <span className={`px-1.5 py-0.5 rounded text-xs font-mono ${
+                categoryFilter === "LLD" ? "bg-zinc-700 text-white" : "bg-zinc-900 text-zinc-400"
               }`}>
                 {lldCount}
               </span>
@@ -230,14 +230,14 @@ export default function SystemDesignPage() {
           </div>
 
           {/* Search Input */}
-          <div className="relative flex-1 sm:w-72">
-            <Search className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-2.5" />
+          <div className="relative flex-1 sm:w-80">
+            <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-3" />
             <input
               type="text"
               placeholder="Search topics, companies..."
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-zinc-800 bg-[#0c0c0e] text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 transition-colors"
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-lg border border-[#27272A] bg-[#121212] text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
             />
           </div>
 
@@ -245,12 +245,12 @@ export default function SystemDesignPage() {
       </div>
 
       {/* Main Table View */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/30 overflow-hidden shadow-xl">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8">
+        <div className="rounded-xl border border-[#27272A] bg-[#121212] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-zinc-800 bg-[#0c0c0e] text-[11px] font-mono text-zinc-400 uppercase tracking-wider">
+                <tr className="border-b border-[#27272A] bg-zinc-900/80 text-xs font-mono text-zinc-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4 w-16 text-center">Status</th>
                   <th className="py-3.5 px-4">Topic / System</th>
                   <th className="py-3.5 px-4">Category</th>
@@ -258,16 +258,16 @@ export default function SystemDesignPage() {
                   <th className="py-3.5 px-4 text-center w-36">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-800/60 text-xs">
+              <tbody className="divide-y divide-[#27272A] text-sm">
                 {loading ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-zinc-500 font-mono">
+                    <td colSpan={5} className="py-12 text-center text-zinc-400 font-mono">
                       Loading system design topics...
                     </td>
                   </tr>
                 ) : filteredTopics.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="py-12 text-center text-zinc-500">
+                    <td colSpan={5} className="py-12 text-center text-zinc-400">
                       No system design topics match your search filter.
                     </td>
                   </tr>
@@ -281,13 +281,13 @@ export default function SystemDesignPage() {
                         className="hover:bg-zinc-800/40 transition-colors group cursor-pointer"
                       >
                         {/* Status Checkbox */}
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-4 px-4 text-center">
                           <button
                             onClick={(e) => toggleStudied(t.id, e)}
                             className={`w-5 h-5 mx-auto rounded border flex items-center justify-center transition-all ${
                               isStudied
-                                ? "bg-emerald-500 border-emerald-500 text-zinc-950"
-                                : "border-zinc-700 bg-zinc-950 hover:border-zinc-500"
+                                ? "bg-emerald-600 border-emerald-500 text-white"
+                                : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
                             }`}
                             title={isStudied ? "Marked as completed" : "Mark as completed"}
                           >
@@ -295,53 +295,50 @@ export default function SystemDesignPage() {
                           </button>
                         </td>
 
-                        {/* Problem Title & Subcategory */}
-                        <td className="py-3.5 px-4">
-                          <div className="font-medium text-zinc-200 group-hover:text-blue-400 transition-colors flex items-center gap-2">
-                            <span className="text-zinc-500 font-mono text-xs">{idx + 1}.</span>
-                            <span className="text-sm font-semibold">{t.title}</span>
+                        {/* Title & Subcategory */}
+                        <td className="py-4 px-4">
+                          <div className="font-semibold text-zinc-200 group-hover:text-white transition-colors flex items-center gap-2">
+                            <span className="text-zinc-500 font-mono text-xs sm:text-sm">{idx + 1}.</span>
+                            <span className="text-base sm:text-[17px]">{t.title}</span>
                           </div>
                           {t.subcategory && (
-                            <div className="text-[11px] text-zinc-400 font-mono mt-0.5">
-                              {t.subcategory}
+                            <div className="text-[13px] text-zinc-400 font-sans font-normal mt-1 flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-zinc-500 shrink-0" />
+                              <span>{t.subcategory}</span>
                             </div>
                           )}
                         </td>
 
                         {/* Category Badge */}
-                        <td className="py-3.5 px-4">
-                          <span className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-mono font-semibold ${
-                            t.category === 'HLD'
-                              ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                              : 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-                          }`}>
+                        <td className="py-4 px-4">
+                          <span className="inline-block px-3 py-1 rounded text-xs font-mono font-medium bg-zinc-800 text-zinc-200 border border-zinc-700/60">
                             {t.category}
                           </span>
                         </td>
 
                         {/* Companies */}
-                        <td className="py-3.5 px-4">
-                          <div className="flex flex-wrap gap-1 max-w-xs">
+                        <td className="py-4 px-4">
+                          <div className="flex flex-wrap gap-1.5 max-w-xs">
                             {t.companies?.map((comp, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-0.5 rounded-full bg-zinc-800/80 text-zinc-300 border border-zinc-700/60 text-[10px] font-medium"
+                                className="px-2.5 py-0.5 rounded-md bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 text-xs font-medium"
                               >
                                 {comp}
                               </span>
-                            )) || <span className="text-zinc-600">—</span>}
+                            )) || <span className="text-zinc-500">—</span>}
                           </div>
                         </td>
 
                         {/* Video Action Button */}
-                        <td className="py-3.5 px-4 text-center">
+                        <td className="py-4 px-4 text-center">
                           <Link
                             to={`/system-design/${t.id}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="px-3 py-1.5 rounded-lg bg-blue-600/10 hover:bg-blue-600 text-blue-400 hover:text-white transition-all border border-blue-500/20 inline-flex items-center gap-1.5 text-xs font-semibold cursor-pointer shadow-sm"
+                            className="px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700/60 inline-flex items-center gap-2 text-xs sm:text-sm font-semibold cursor-pointer transition-colors"
                           >
                             <Play className="w-3.5 h-3.5 fill-current" />
-                            <span>Watch Video</span>
+                            <span>Watch</span>
                           </Link>
                         </td>
                       </tr>

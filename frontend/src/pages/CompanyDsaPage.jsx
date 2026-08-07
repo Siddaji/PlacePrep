@@ -4,7 +4,7 @@ import { getCompanyProblemsData } from "../services/companyProblemService.js";
 import LoadingState from "../components/common/LoadingState.jsx";
 import EmptyState from "../components/common/EmptyState.jsx";
 
-// Inline SVG Icon components to ensure no missing dependency errors
+// Inline SVG Icon components
 const Search = ({ className = "w-4 h-4" }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -51,12 +51,12 @@ const STORAGE_KEY = "placeprep-company-problems-solved";
 const TITLE_STORAGE_KEY = "placeprep-company-problems-solved-titles";
 
 const COMPANY_DESCRIPTIONS = {
-  microsoft: "Core data structures, trees, dynamic programming & system questions.",
-  google: "High-frequency graph algorithms, DP puzzles & complex recursion.",
-  amazon: "Problem solving, arrays, trees, and core data structure foundations.",
-  meta: "Fast-paced coding, binary search, trees & recursion algorithms.",
-  netflix: "High-throughput algorithms, sliding windows & senior interview prep.",
-  linkedin: "Concurrency, API design, hash maps & stack data structures.",
+  microsoft: "Frequently asked interview questions covering binary trees, string algorithms, dynamic programming, and core data structures.",
+  google: "Challenging technical questions emphasizing graph traversals, DP optimizations, advanced recursion, and math logic.",
+  amazon: "High-frequency interview problems focused on array manipulation, binary trees, sliding window, and greedy strategies.",
+  meta: "Speed-oriented interview problems featuring binary search, tree traversals, recursion, and string processing.",
+  netflix: "System-oriented DSA problems covering two pointers, sliding windows, heaps, and streaming memory constraints.",
+  linkedin: "Interview questions prioritizing hash maps, concurrent data structures, stacks, and API string parsing.",
 };
 
 const DIFFICULTY_STYLES = {
@@ -85,17 +85,11 @@ export default function CompanyDsaPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Selected company state (null = show all cards, companyId = show problems)
   const [activeCompanyId, setActiveCompanyId] = useState(() => searchParams.get("company") || null);
-
-  // Search query for cards
   const [searchCompany, setSearchCompany] = useState("");
-
-  // Search & Filters inside company problems view
   const [searchProblem, setSearchProblem] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
 
-  // Solved tracking states
   const [solvedIds, setSolvedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -272,7 +266,7 @@ export default function CompanyDsaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0c10] text-zinc-100 flex items-center justify-center py-20">
+      <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] flex items-center justify-center py-20">
         <LoadingState />
       </div>
     );
@@ -280,40 +274,40 @@ export default function CompanyDsaPage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-[#0b0c10] text-zinc-100 flex items-center justify-center py-20">
+      <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] flex items-center justify-center py-20">
         <EmptyState />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0c10] text-zinc-100 font-sans pb-20">
+    <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] font-sans pb-20">
       {/* ── HEADER ──────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-[#0b0c10]/95 backdrop-blur border-b border-zinc-800 px-4 sm:px-8 py-4">
+      <header className="sticky top-[64px] z-20 bg-[#0B0B0B]/90 backdrop-blur border-b border-[#27272A] px-4 sm:px-6 py-5">
         <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             {activeCompanyId ? (
               <button
                 onClick={handleBackToGrid}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 hover:text-white hover:border-zinc-700 transition-all text-xs font-semibold"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#121212] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors text-sm font-semibold"
               >
-                <ArrowLeft className="w-4 h-4 text-blue-400" />
+                <ArrowLeft className="w-4 h-4 text-zinc-400" />
                 <span>All Companies</span>
               </button>
             ) : (
-              <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-blue-400">
+              <div className="p-2.5 rounded-lg bg-[#121212] border border-[#27272A] text-zinc-300">
                 <Building2 className="w-5 h-5" />
               </div>
             )}
 
             <div>
-              <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                {activeCompanyId ? activeCompanyObj?.name : "Company-Wise DSA Questions"}
+              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                {activeCompanyId ? activeCompanyObj?.name : "Company-Wise DSA Practice"}
               </h1>
-              <p className="text-xs text-zinc-400">
+              <p className="text-sm text-zinc-300 mt-0.5">
                 {activeCompanyId
-                  ? `Practice interview problems asked at ${activeCompanyObj?.name}`
-                  : "Select a company card to view its problems"}
+                  ? `Targeted interview problems asked at ${activeCompanyObj?.name}`
+                  : "Target company specific problem archives from recent technical interviews"}
               </p>
             </div>
           </div>
@@ -321,25 +315,25 @@ export default function CompanyDsaPage() {
       </header>
 
       {/* ── MAIN CONTENT ────────────────────────────────────────── */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-8 pt-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
         
-        {/* ── VIEW 1: SIMPLE COMPANY CARDS ────────────────────────── */}
+        {/* ── VIEW 1: COMPANY CARDS ────────────────────────── */}
         {!activeCompanyId && (
           <div>
-            {/* Minimal Search Bar */}
+            {/* Search Bar */}
             <div className="mb-6 relative max-w-sm">
-              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
               <input
                 type="text"
                 value={searchCompany}
                 onChange={(e) => setSearchCompany(e.target.value)}
                 placeholder="Search target company..."
-                className="w-full bg-zinc-900/90 border border-zinc-800 rounded-xl pl-10 pr-4 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
+                className="w-full bg-[#121212] border border-[#27272A] rounded-lg pl-10 pr-4 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
               />
             </div>
 
-            {/* Grid of Minimal Company Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Grid of Company Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredCompanyCards.map((comp) => {
                 const stats = companyStatsMap[comp.id] || { total: 0, solved: 0 };
                 const desc = COMPANY_DESCRIPTIONS[comp.id] || "Curated technical interview questions.";
@@ -348,38 +342,38 @@ export default function CompanyDsaPage() {
                   <div
                     key={comp.id}
                     onClick={() => handleOpenCompany(comp.id)}
-                    className="group border border-zinc-800/80 bg-zinc-900/50 hover:bg-zinc-900 hover:border-zinc-700/80 rounded-2xl p-5 transition-all cursor-pointer flex flex-col justify-between hover:shadow-lg"
+                    className="group border border-[#27272A] bg-[#121212] hover:bg-[#161618] hover:border-zinc-700 rounded-xl p-6 transition-all cursor-pointer flex flex-col justify-between"
                   >
                     <div>
                       {/* Logo + Name */}
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="text-3xl p-2 bg-zinc-950 rounded-xl border border-zinc-800 shrink-0">
+                      <div className="flex items-center gap-3.5 mb-3.5">
+                        <span className="text-2xl p-2.5 bg-zinc-900 rounded-lg border border-[#27272A] shrink-0">
                           {comp.logo}
                         </span>
                         <div>
-                          <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
+                          <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-zinc-100 transition-colors">
                             {comp.name}
                           </h3>
-                          <span className="text-xs text-zinc-400 font-mono">
-                            {stats.solved > 0 ? `${stats.solved} / ${stats.total} Solved` : `${stats.total} Questions`}
+                          <span className="text-xs sm:text-sm text-zinc-400 font-sans font-medium">
+                            {stats.solved > 0 ? `${stats.solved} / ${stats.total} solved` : `${stats.total} interview questions`}
                           </span>
                         </div>
                       </div>
 
-                      {/* Small Description */}
-                      <p className="text-xs text-zinc-400 leading-relaxed">
+                      {/* Description */}
+                      <p className="text-[14px] font-normal text-zinc-400 leading-8 tracking-[0.005em]">
                         {desc}
                       </p>
                     </div>
 
                     {/* Bottom Question Count Tag */}
-                    <div className="mt-4 pt-3 border-t border-zinc-800/60 flex items-center justify-between text-xs font-mono text-zinc-400">
-                      <span className="flex items-center gap-1.5 text-zinc-400">
-                        <Code2 className="w-3.5 h-3.5 text-blue-400" />
-                        {stats.total} Questions
+                    <div className="mt-5 pt-3.5 border-t border-[#27272A] flex items-center justify-between text-xs sm:text-sm font-sans text-zinc-400">
+                      <span className="flex items-center gap-2 text-zinc-400 font-medium">
+                        <Code2 className="w-4 h-4 text-zinc-400" />
+                        {stats.total} interview questions
                       </span>
-                      <span className="text-blue-400 font-sans font-semibold group-hover:translate-x-0.5 transition-transform">
-                        Open →
+                      <span className="text-zinc-200 font-sans font-semibold text-sm group-hover:translate-x-1 transition-transform">
+                        Explore →
                       </span>
                     </div>
                   </div>
@@ -393,48 +387,48 @@ export default function CompanyDsaPage() {
         {activeCompanyId && activeCompanyObj && (
           <div className="space-y-6">
             
-            {/* Minimal Header Banner */}
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-5">
-              <div className="flex items-center gap-3">
-                <span className="text-4xl p-2 bg-zinc-900 rounded-2xl border border-zinc-800">
+            {/* Header Banner */}
+            <div className="flex items-center justify-between border-b border-[#27272A] pb-6">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl p-3 bg-[#121212] rounded-xl border border-[#27272A]">
                   {activeCompanyObj.logo}
                 </span>
                 <div>
-                  <h2 className="text-xl font-bold text-white">
+                  <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                     {activeCompanyObj.name} DSA Problems
                   </h2>
-                  <p className="text-xs text-zinc-400 mt-0.5">
+                  <p className="text-sm text-zinc-300 mt-1">
                     {COMPANY_DESCRIPTIONS[activeCompanyId] || "Curated interview problems."}
                   </p>
                 </div>
               </div>
 
-              <div className="text-right font-mono text-xs text-zinc-400">
-                <div className="text-sm font-bold text-white">
+              <div className="text-right font-mono text-sm text-zinc-400 bg-[#121212] border border-[#27272A] px-4 py-2.5 rounded-xl">
+                <div className="text-base font-bold text-white">
                   {companyStatsMap[activeCompanyId]?.solved || 0} / {companyStatsMap[activeCompanyId]?.total || 0}
                 </div>
-                <span>Solved</span>
+                <span className="text-zinc-400 text-xs">Solved</span>
               </div>
             </div>
 
-            {/* Simple Search & Difficulty Filters */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            {/* Search & Difficulty Filters */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5">
               <div className="relative flex-1 max-w-md">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-500" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type="text"
                   value={searchProblem}
                   onChange={(e) => setSearchProblem(e.target.value)}
                   placeholder="Search problem title or topic..."
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
+                  className="w-full bg-[#121212] border border-[#27272A] rounded-lg pl-10 pr-4 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <select
                   value={difficultyFilter}
                   onChange={(e) => setDifficultyFilter(e.target.value)}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-zinc-600 font-medium"
+                  className="bg-[#121212] border border-[#27272A] rounded-lg px-3.5 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-zinc-600 font-medium cursor-pointer"
                 >
                   <option value="ALL">Difficulty: All</option>
                   <option value="EASY">Easy</option>
@@ -448,34 +442,34 @@ export default function CompanyDsaPage() {
                       setSearchProblem("");
                       setDifficultyFilter("ALL");
                     }}
-                    className="p-2 text-zinc-400 hover:text-white bg-zinc-900 border border-zinc-800 rounded-xl"
+                    className="p-2.5 text-zinc-300 hover:text-white bg-[#121212] border border-[#27272A] rounded-lg transition-colors"
                     title="Reset Filters"
                   >
-                    <RefreshCw className="w-3.5 h-3.5" />
+                    <RefreshCw className="w-4 h-4" />
                   </button>
                 )}
               </div>
             </div>
 
-            {/* Simple Problem Table */}
+            {/* Problem Table */}
             {filteredProblems.length === 0 ? (
-              <div className="bg-zinc-900/40 border border-zinc-800 rounded-2xl p-8 text-center text-zinc-400 text-xs">
+              <div className="bg-[#121212] border border-[#27272A] rounded-xl p-10 text-center text-zinc-400 text-sm">
                 No problems match your search criteria.
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-900/40">
-                <table className="w-full text-left border-collapse min-w-[600px]">
+              <div className="overflow-x-auto rounded-xl border border-[#27272A] bg-[#121212]">
+                <table className="w-full text-left border-collapse min-w-[640px]">
                   <thead>
-                    <tr className="border-b border-zinc-800 text-[11px] font-mono text-zinc-400 uppercase bg-zinc-950/60">
-                      <th className="py-3 px-4 w-12 text-center">Status</th>
-                      <th className="py-3 px-3 w-12 text-center">#</th>
+                    <tr className="border-b border-[#27272A] text-xs font-mono text-zinc-400 uppercase tracking-wider bg-zinc-900/80">
+                      <th className="py-3 px-4 w-14 text-center">Status</th>
+                      <th className="py-3 px-3 w-14 text-center">#</th>
                       <th className="py-3 px-4">Problem Name</th>
                       <th className="py-3 px-4">Topics</th>
                       <th className="py-3 px-3 text-center">Difficulty</th>
                       <th className="py-3 px-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-zinc-800/60 text-xs sm:text-sm">
+                  <tbody className="divide-y divide-[#27272A] text-sm sm:text-[15px]">
                     {filteredProblems.map((prob) => {
                       const isSolved = isProblemSolved(prob);
                       const link = getProblemLink(prob.title, prob.platform);
@@ -489,46 +483,46 @@ export default function CompanyDsaPage() {
                           }`}
                         >
                           {/* Checkbox */}
-                          <td className="py-3 px-4 text-center">
+                          <td className="py-3.5 px-4 text-center">
                             <button
                               onClick={(e) => toggleSolved(prob, e)}
-                              className="p-1 rounded hover:scale-105 transition-transform"
+                              className="p-1 rounded transition-transform"
                             >
                               <div
-                                className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
+                                className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
                                   isSolved
                                     ? "bg-emerald-600 border-emerald-500 text-white"
-                                    : "border-zinc-700 bg-zinc-950 hover:border-zinc-500"
+                                    : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
                                 }`}
                               >
-                                {isSolved && <Check className="w-3 h-3 stroke-[3]" />}
+                                {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                               </div>
                             </button>
                           </td>
 
                           {/* ID */}
-                          <td className="py-3 px-3 text-center font-mono text-zinc-500 text-xs">
+                          <td className="py-3.5 px-3 text-center font-mono text-zinc-400 text-xs sm:text-sm">
                             {prob.id}
                           </td>
 
                           {/* Title + Asked in Companies */}
-                          <td className="py-3 px-4 font-semibold">
+                          <td className="py-3.5 px-4 font-semibold">
                             <div className="flex flex-col gap-0.5">
                               <a
                                 href={link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`hover:text-blue-400 transition-colors ${
-                                  isSolved ? "text-zinc-500 line-through" : "text-zinc-100"
+                                className={`hover:text-white transition-colors ${
+                                  isSolved ? "text-zinc-500 line-through font-normal" : "text-zinc-100"
                                 }`}
                               >
                                 {prob.title}
                               </a>
                               {askedCompanies.length > 0 && (
-                                <span className="text-[11px] font-normal text-zinc-400">
+                                <span className="text-xs font-normal text-zinc-400">
                                   Asked in {askedCompanies.join(", ")}
                                   {isSolved && (
-                                    <span className="text-emerald-400 font-medium ml-1">✓ Solved</span>
+                                    <span className="text-emerald-400 font-medium ml-1.5">✓ Solved</span>
                                   )}
                                 </span>
                               )}
@@ -536,12 +530,12 @@ export default function CompanyDsaPage() {
                           </td>
 
                           {/* Tags */}
-                          <td className="py-3 px-4">
-                            <div className="flex flex-wrap gap-1">
+                          <td className="py-3.5 px-4">
+                            <div className="flex flex-wrap gap-1.5">
                               {prob.tags.map((tag) => (
                                 <span
                                   key={tag}
-                                  className="text-[10px] font-mono bg-zinc-950 border border-zinc-800/80 text-zinc-400 px-2 py-0.5 rounded"
+                                  className="text-[13px] font-sans font-medium bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 px-2.5 py-1 rounded-md hover:bg-zinc-800 transition-colors"
                                 >
                                   {tag}
                                 </span>
@@ -550,10 +544,10 @@ export default function CompanyDsaPage() {
                           </td>
 
                           {/* Difficulty */}
-                          <td className="py-3 px-3 text-center">
+                          <td className="py-3.5 px-3 text-center">
                             <span
-                              className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded border ${
-                                DIFFICULTY_STYLES[prob.difficulty] || "bg-zinc-800 text-zinc-400"
+                              className={`text-xs sm:text-sm font-semibold px-2.5 py-0.5 rounded border ${
+                                DIFFICULTY_STYLES[prob.difficulty] || "bg-zinc-800 text-zinc-300"
                               }`}
                             >
                               {prob.difficulty}
@@ -561,15 +555,15 @@ export default function CompanyDsaPage() {
                           </td>
 
                           {/* Link Action */}
-                          <td className="py-3 px-4 text-right">
+                          <td className="py-3.5 px-4 text-right">
                             <a
                               href={link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-zinc-200 hover:text-white transition-colors"
                             >
                               <span>Solve</span>
-                              <ExternalLink className="w-3 h-3" />
+                              <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
                             </a>
                           </td>
                         </tr>

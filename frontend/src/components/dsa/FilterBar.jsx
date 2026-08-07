@@ -25,13 +25,13 @@ function FilterBar({
   ].filter(Boolean).length;
 
   return (
-    <div className="sticky top-[57px] z-10 border-b border-gray-800 bg-gray-950/80 backdrop-blur-md shadow-sm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
+    <div className="sticky top-[64px] z-10 border-b border-[#27272A] bg-[#0B0B0B]/90 backdrop-blur-md">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 py-3.5">
 
         {/* mobile row */}
-        <div className="flex items-center gap-2 sm:hidden">
+        <div className="flex items-center gap-2.5 sm:hidden">
           <div className="relative flex-1">
-            <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600"
+            <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400"
               fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
             </svg>
@@ -40,16 +40,16 @@ function FilterBar({
               placeholder="Search problems..."
               value={search}
               onChange={onSearchChange}
-              className="w-full rounded-lg border border-gray-800 bg-gray-900 py-2.5 pl-9 pr-3 text-sm text-gray-200 placeholder:text-gray-600 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+              className="w-full rounded-lg border border-[#27272A] bg-[#121212] py-2.5 pl-10 pr-3.5 text-sm font-medium text-zinc-200 placeholder:text-zinc-500 focus:border-zinc-500 focus:outline-none"
             />
           </div>
 
           <button
             onClick={() => setFiltersOpen(prev => !prev)}
-            className={`relative inline-flex items-center gap-1.5 rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors shrink-0 ${
+            className={`relative inline-flex items-center gap-1.5 rounded-lg border px-3.5 py-2.5 text-sm font-semibold transition-colors shrink-0 ${
               filtersOpen || activeCount > 0
-                ? "bg-violet-600 text-white border-violet-600"
-                : "bg-gray-900 text-gray-400 border-gray-800 hover:border-gray-700"
+                ? "bg-zinc-800 text-white border-zinc-700"
+                : "bg-[#121212] text-zinc-300 border-[#27272A] hover:border-zinc-700"
             }`}
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -57,7 +57,7 @@ function FilterBar({
             </svg>
             Filters
             {activeCount > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white">
+              <span className="ml-1 flex h-4 w-4 items-center justify-center rounded-full bg-white text-xs font-bold text-black">
                 {activeCount}
               </span>
             )}
@@ -66,26 +66,26 @@ function FilterBar({
 
         {/* mobile filter panel */}
         {filtersOpen && (
-          <div className="sm:hidden mt-3 rounded-xl border border-gray-800 bg-gray-900 p-4 space-y-3">
+          <div className="sm:hidden mt-3 rounded-xl border border-[#27272A] bg-[#121212] p-4 space-y-3.5">
             <div className="grid grid-cols-2 gap-3">
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Topic</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Topic</span>
                 <select
                   value={topic}
                   onChange={onTopicChange}
-                  className="rounded-lg border border-gray-700 bg-gray-800 py-2 px-3 text-sm font-medium text-gray-300 focus:border-violet-500/50 focus:outline-none"
+                  className="rounded-lg border border-[#27272A] bg-zinc-900 py-2 px-3 text-sm font-medium text-zinc-200 focus:border-zinc-500 focus:outline-none"
                 >
                   <option value="All">All Topics</option>
                   {topics.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Difficulty</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Difficulty</span>
                 <select
                   value={difficulty}
                   onChange={onDifficultyChange}
-                  className="rounded-lg border border-gray-700 bg-gray-800 py-2 px-3 text-sm font-medium text-gray-300 focus:border-violet-500/50 focus:outline-none"
+                  className="rounded-lg border border-[#27272A] bg-zinc-900 py-2 px-3 text-sm font-medium text-zinc-200 focus:border-zinc-500 focus:outline-none"
                 >
                   <option value="All">All</option>
                   <option value="Easy">Easy</option>
@@ -94,12 +94,12 @@ function FilterBar({
                 </select>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Priority</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Priority</span>
                 <select
                   value={priority}
                   onChange={onPriorityChange}
-                  className="rounded-lg border border-gray-700 bg-gray-800 py-2 px-3 text-sm font-medium text-gray-300 focus:border-violet-500/50 focus:outline-none"
+                  className="rounded-lg border border-[#27272A] bg-zinc-900 py-2 px-3 text-sm font-medium text-zinc-200 focus:border-zinc-500 focus:outline-none"
                 >
                   <option value="All">All</option>
                   <option value="P0">P0 — Must</option>
@@ -108,14 +108,14 @@ function FilterBar({
                 </select>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Status</span>
+              <div className="flex flex-col gap-1.5">
+                <span className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Status</span>
                 <button
                   onClick={onToggleUnsolved}
                   className={`rounded-lg border px-3 py-2 text-sm font-medium transition-colors text-left ${
                     showUnsolved
-                      ? "bg-violet-600 text-white border-violet-600"
-                      : "bg-gray-800 text-gray-400 border-gray-700"
+                      ? "bg-zinc-800 text-white border-zinc-700"
+                      : "bg-zinc-900 text-zinc-300 border-[#27272A]"
                   }`}
                 >
                   {showUnsolved ? "Unsolved Only" : "All Problems"}
@@ -126,13 +126,13 @@ function FilterBar({
             <div className="flex items-center gap-2 pt-1">
               <button
                 onClick={() => { onClearFilters(); setFiltersOpen(false); }}
-                className="flex-1 rounded-lg border border-gray-700 bg-gray-800 py-2 text-sm font-medium text-gray-400 hover:text-gray-200 transition-colors"
+                className="flex-1 rounded-lg border border-[#27272A] bg-zinc-900 py-2.5 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
               >
                 Clear All
               </button>
               <button
                 onClick={() => setFiltersOpen(false)}
-                className="flex-1 rounded-lg bg-violet-600 py-2 text-sm font-semibold text-white hover:bg-violet-500 transition-colors"
+                className="flex-1 rounded-lg bg-white py-2.5 text-xs font-semibold text-black hover:bg-zinc-200 transition-colors"
               >
                 Apply
               </button>
@@ -145,27 +145,27 @@ function FilterBar({
 
           {/* search */}
           <div className="flex flex-col gap-1.5 w-full lg:flex-1">
-            <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Search</span>
+            <span className="text-xs sm:text-sm font-semibold text-zinc-400 uppercase tracking-wider">Search</span>
             <div className="relative">
-              <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600"
+              <svg className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400"
                 fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
               </svg>
               <input
                 type="text"
-                placeholder="Search problems by title..."
+                placeholder="Search problem title..."
                 value={search}
                 onChange={onSearchChange}
-                className="w-full rounded-lg border border-gray-800 bg-gray-900 py-2.5 pl-10 pr-3.5 text-sm text-gray-200 placeholder:text-gray-600 transition-colors hover:border-gray-700 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                className="w-full rounded-lg border border-[#27272A] bg-[#121212] py-2.5 pl-10 pr-3.5 text-sm font-medium text-zinc-200 placeholder:text-zinc-500 transition-colors hover:border-zinc-700 focus:border-zinc-500 focus:outline-none"
               />
             </div>
           </div>
 
           {/* dropdowns + buttons */}
-          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 w-full lg:w-auto lg:items-end">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3.5 w-full lg:w-auto lg:items-end">
 
             <SelectField label="Topic" value={topic} onChange={onTopicChange}>
-              <option value="All">All</option>
+              <option value="All">All Topics</option>
               {topics.map(t => <option key={t} value={t}>{t}</option>)}
             </SelectField>
 
@@ -185,13 +185,13 @@ function FilterBar({
 
             {/* unsolved toggle */}
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">Status</span>
+              <span className="text-xs sm:text-sm font-semibold text-zinc-400 uppercase tracking-wider">Status</span>
               <button
                 onClick={onToggleUnsolved}
                 className={`inline-flex items-center gap-2 rounded-lg px-3.5 py-2.5 text-sm font-medium border transition-colors ${
                   showUnsolved
-                    ? "bg-violet-600 text-white border-violet-600 hover:bg-violet-500"
-                    : "bg-gray-900 text-gray-400 border-gray-800 hover:border-gray-700 hover:text-gray-200"
+                    ? "bg-zinc-800 text-white border-zinc-700"
+                    : "bg-[#121212] text-zinc-300 border-[#27272A] hover:border-zinc-700 hover:text-white"
                 }`}
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -207,12 +207,12 @@ function FilterBar({
 
             {/* clear */}
             <div className="flex flex-col gap-1.5">
-              <span className="text-xs font-medium text-gray-600 uppercase tracking-wide invisible">Clear</span>
+              <span className="text-xs sm:text-sm font-semibold text-zinc-400 uppercase tracking-wider invisible">Clear</span>
               <button
                 onClick={onClearFilters}
-                className="rounded-lg border border-gray-800 bg-gray-900 px-3.5 py-2.5 text-sm font-medium text-gray-500 hover:border-gray-700 hover:text-gray-300 transition-colors"
+                className="rounded-lg border border-[#27272A] bg-[#121212] px-3.5 py-2.5 text-sm font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 transition-colors"
               >
-                Clear Filters
+                Reset
               </button>
             </div>
 

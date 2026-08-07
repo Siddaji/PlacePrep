@@ -10,17 +10,17 @@ const STORAGE_KEY = "placeprep-solved";
 
 function StatBox({ label, value, color }) {
   const colors = {
-    default: "text-gray-100",
+    default: "text-zinc-100",
     easy:    "text-emerald-400",
     medium:  "text-amber-400",
     hard:    "text-rose-400",
   };
   return (
-    <div className="flex flex-col items-center gap-0.5 px-4 py-3 rounded-xl bg-gray-900 border border-gray-800 min-w-[80px]">
-      <span className={`text-xl font-bold ${colors[color] || colors.default}`}>
+    <div className="flex flex-col items-center justify-center px-4 py-3 rounded-lg bg-[#121212] border border-[#27272A] min-w-[88px]">
+      <span className={`text-lg sm:text-xl font-bold font-mono ${colors[color] || colors.default}`}>
         {value}
       </span>
-      <span className="text-xs text-gray-600 font-medium">{label}</span>
+      <span className="text-xs text-zinc-400 font-semibold uppercase tracking-wider mt-0.5">{label}</span>
     </div>
   );
 }
@@ -87,37 +87,37 @@ function DsaPage() {
     <div>
 
       {/* page header */}
-      <div className="border-b border-gray-800 bg-gray-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <div className="border-b border-[#27272A] bg-[#0B0B0B]">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
 
-          <Link to="/" className="text-xs text-gray-600 hover:text-gray-400 transition-colors">
-            ← Home
+          <Link to="/" className="text-sm font-medium text-zinc-400 hover:text-zinc-200 transition-colors">
+            ← Back to Home
           </Link>
 
-          <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-100">
-                DSA Tracker
+              <h1 className="text-3xl sm:text-[36px] font-bold tracking-tight text-[#F5F5F5]">
+                DSA Problem Tracker
               </h1>
-              <p className="mt-1 text-sm text-gray-600">
-                Curated problems by topic, pattern, and company — sorted by interview priority.
+              <p className="mt-2 text-sm sm:text-base text-zinc-300 max-w-2xl leading-relaxed">
+                Curated interview problems by topic, pattern, and priority — complete with LeetCode solutions.
               </p>
             </div>
 
             {/* progress */}
             {!loading && totalCount > 0 && (
-              <div className="sm:text-right">
-                <p className="text-sm font-semibold text-gray-300">
+              <div className="sm:text-right bg-[#121212] border border-[#27272A] p-4 rounded-xl shrink-0">
+                <p className="text-sm font-semibold text-zinc-200">
                   {solvedCount}{" "}
-                  <span className="font-normal text-gray-600">/ {totalCount} Solved</span>
+                  <span className="font-normal text-zinc-400">/ {totalCount} Solved</span>
                 </p>
-                <div className="mt-1.5 w-full sm:w-48 h-1.5 rounded-full bg-gray-800">
+                <div className="mt-2 w-full sm:w-48 h-1.5 rounded-full bg-zinc-800">
                   <div
-                    className="h-1.5 rounded-full bg-emerald-500 transition-all duration-500"
+                    className="h-1.5 rounded-full bg-emerald-400 transition-all duration-300"
                     style={{ width: `${progressPct}%` }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-600">{progressPct}% complete</p>
+                <p className="mt-1.5 text-xs font-mono text-zinc-400">{progressPct}% completed</p>
               </div>
             )}
           </div>
@@ -153,13 +153,13 @@ function DsaPage() {
       />
 
       {/* problem grid */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 py-8">
         <div className="flex items-center justify-between mb-5">
-          <p className="text-sm font-medium text-gray-600">
+          <p className="text-sm font-medium text-zinc-400">
             Showing{" "}
-            <span className="text-gray-300 font-semibold">{filteredProblems.length}</span>
+            <span className="text-zinc-100 font-bold">{filteredProblems.length}</span>
             {" "}of{" "}
-            <span className="text-gray-300 font-semibold">{totalCount}</span>
+            <span className="text-zinc-100 font-bold">{totalCount}</span>
             {" "}problems
           </p>
         </div>
@@ -169,7 +169,7 @@ function DsaPage() {
         ) : filteredProblems.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredProblems.map(p => (
               <ProblemCard
                 key={p.id}
