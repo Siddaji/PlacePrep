@@ -4,6 +4,8 @@ import HomePage from "../pages/HomePage.jsx";
 import DsaPage from "../pages/DsaPage.jsx";
 import SystemDesignPage from "../pages/SystemDesignPage.jsx";
 import SystemDesignDetailPage from "../pages/SystemDesignDetailPage.jsx";
+import OopPage from "../pages/OopPage.jsx";
+import OopVideosPage from "../pages/OopVideosPage.jsx";
 import SubjectsPage from "../pages/SubjectsPage.jsx";
 import RoadmapPage from "../pages/RoadmapPage.jsx";
 import CompanyDsaPage from "../pages/CompanyDsaPage.jsx";
@@ -17,6 +19,8 @@ function AppRoutes() {
         <Route path="/dsa" element={<DsaPage />} />
         <Route path="/system-design" element={<SystemDesignPage />} />
         <Route path="/system-design/:id" element={<SystemDesignDetailPage />} />
+        <Route path="/oop" element={<OopPage />} />
+        <Route path="/oop/videos" element={<OopVideosPage />} />
         <Route path="/subjects" element={<SubjectsPage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/company-dsa" element={<CompanyDsaPage />} />

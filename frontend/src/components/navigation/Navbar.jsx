@@ -5,6 +5,7 @@ const navLinks = [
   { to: "/dsa",           label: "DSA" },
   { to: "/company-dsa",   label: "Company DSA" },
   { to: "/system-design", label: "System Design" },
+  { to: "/oop",           label: "OOP" },
   { to: "/subjects",      label: "Subjects" },
   { to: "/roadmap",       label: "Roadmap" },
 ];
