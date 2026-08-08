@@ -39,13 +39,24 @@ const modules = [
     ),
   },
   {
-    id: "subjects",
-    to: "/subjects",
-    title: "Core CS Subjects",
-    description: "Operating Systems, DBMS, Computer Networks, and OOP — core interview concepts, diagrams, and revision notes.",
+    id: "os",
+    to: "/os",
+    title: "Operating Systems",
+    description: "Structured roadmap covering OS basics, processes, CPU scheduling, threads, synchronization, deadlocks, and memory management.",
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 14.25a3.75 3.75 0 013.75-3.75h9a3.75 3.75 0 013.75 3.75v3a3.75 3.75 0 01-3.75 3.75h-9a3.75 3.75 0 01-3.75-3.75v-3zM5.25 6a3.75 3.75 0 013.75-3.75h9a3.75 3.75 0 013.75 3.75v3a3.75 3.75 0 01-3.75 3.75h-9A3.75 3.75 0 015.25 9V6z" />
+      </svg>
+    ),
+  },
+  {
+    id: "oop",
+    to: "/oop",
+    title: "Object-Oriented Programming",
+    description: "Classes, Inheritance, Polymorphism, Abstraction, Encapsulation, SOLID principles, and OOP design patterns.",
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
       </svg>
     ),
   },
@@ -124,7 +135,8 @@ function HomePage() {
       return `${companyProblemCount} Problems`;
     }
     if (id === "system-design") return "12 Topics";
-    if (id === "subjects")      return "20 Topics";
+    if (id === "os")            return "12 Modules";
+    if (id === "oop")           return "8 Modules";
     if (id === "roadmap")       return "8 Weeks";
     return "Curated";
   }
@@ -172,16 +184,9 @@ function HomePage() {
 
               <Link
                 to="/company-dsa"
-                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A]  text-black px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A] text-black px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
               >
-                Company DSA
-              </Link>
-
-              <Link
-                to="/subjects"
-                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A]  text-black  px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
-              >
-                Core CS Subjects
+                Company Wise DSA
               </Link>
             </div>
 

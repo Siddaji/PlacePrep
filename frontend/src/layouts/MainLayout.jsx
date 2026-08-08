@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation, useOutlet } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Navbar from "../components/navigation/Navbar.jsx";
@@ -43,12 +43,28 @@ function AnimatedOutlet() {
 }
 
 function MainLayout() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
-    <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] flex flex-col font-sans relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#0B0B0B] text-[#F5F5F5] font-sans relative overflow-x-hidden">
       <ScrollToTop />
-      <div className="relative z-10 flex flex-col min-h-screen">
-        <Navbar />
-        <main className="flex-1 flex flex-col">
+
+      {/* Sidebar + Top Header Navigation */}
+      <Navbar
+        sidebarCollapsed={sidebarCollapsed}
+        setSidebarCollapsed={setSidebarCollapsed}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
+
+      {/* Main Right Content Panel with Responsive Left Padding */}
+      <div
+        className={`flex flex-col min-h-screen transition-all duration-300 ${
+          sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
+        }`}
+      >
+        <main className="flex-1 flex flex-col min-w-0">
           <AnimatedOutlet />
         </main>
         <Footer />

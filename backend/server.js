@@ -7,6 +7,7 @@ import roadmapRoutes from "./src/routes/roadmapRoutes.js";
 import companyProblemRoutes from "./src/routes/companyProblemRoutes.js";
 import oopRoutes from "./src/routes/oopRoutes.js";
 import {OOP_MODULES} from "./src/data/oopData.js";
+import {OS_MODULES} from "./src/data/osData.js";
 
 const app = express();
 
@@ -30,6 +31,10 @@ app.get("/", (req, res) => {
 
 app.get("/api/oop", (req, res) => {
   res.json(OOP_MODULES);
+});
+
+app.get("/api/os", (req, res) => {
+  res.json(OS_MODULES);
 });
 
 const PORT = process.env.PORT || 5000;
