@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export function getBreadcrumbs(pathname) {
   if (pathname === "/") return ["Dashboard"];
+  if (pathname.startsWith("/login")) return ["Authentication", "Sign In"];
+  if (pathname.startsWith("/register")) return ["Authentication", "Register"];
+  if (pathname.startsWith("/verify-email")) return ["Authentication", "Verify Email"];
+  if (pathname.startsWith("/forgot-password")) return ["Authentication", "Forgot Password"];
+  if (pathname.startsWith("/reset-password")) return ["Authentication", "Reset Password"];
   if (pathname.startsWith("/dsa")) return ["Preparation", "DSA"];
   if (pathname.startsWith("/company-dsa")) return ["Preparation", "Company Wise DSA"];
   if (pathname.startsWith("/system-design")) return ["Preparation", "System Design Sheet"];
@@ -17,6 +23,7 @@ export function getBreadcrumbs(pathname) {
 
 function Navbar({ sidebarCollapsed, setSidebarCollapsed, mobileOpen, setMobileOpen }) {
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
 
   // Accordion state for Core Subjects
   const [coreSubjectsOpen, setCoreSubjectsOpen] = useState(
@@ -225,17 +232,31 @@ function Navbar({ sidebarCollapsed, setSidebarCollapsed, mobileOpen, setMobileOp
 
         {/* Sidebar Footer User/Status info */}
         {(!sidebarCollapsed || mobileOpen) && (
-          <div className="p-3 border-t border-[#27272A] bg-zinc-950/60">
-            <div className="flex items-center gap-2.5 px-2 py-1.5">
-              <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-xs font-medium text-zinc-400">Placement Prep Active</span>
-            </div>
+          <div className="p-3 border-t border-[#27272A] bg-zinc-950/60 space-y-2">
+            {isAuthenticated ? (
+              <div className="flex items-center justify-between px-2 py-1">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <div className="h-7 w-7 rounded-full bg-zinc-800 border border-zinc-700 text-white font-semibold text-xs flex items-center justify-center shrink-0">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  </div>
+                  <div className="truncate">
+                    <p className="text-xs font-semibold text-white truncate">{user?.name}</p>
+                    <p className="text-[10px] text-zinc-400 truncate">{user?.email}</p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 px-2 py-1.5">
+                <div className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs font-medium text-zinc-400">Placement Prep Active</span>
+              </div>
+            )}
           </div>
         )}
       </aside>
 
       {/* Top Header Bar for Main Content Area */}
-      <header className={`sticky top-0 z-20 h-16 border-b border-[#27272A] bg-[#0B0B0B]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-all duration-300 ${
+      <header className={`sticky top-0 z-20 h-16 border-b border-[#27272A] bg-[#0B0B0B]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between transition-[padding-left] duration-300 ${
         sidebarCollapsed ? "lg:pl-20" : "lg:pl-64"
       }`}>
         <div className="flex items-center gap-3">
@@ -279,11 +300,36 @@ function Navbar({ sidebarCollapsed, setSidebarCollapsed, mobileOpen, setMobileOp
         </div>
 
         {/* Right header actions */}
-        <div className="flex items-center gap-3">
-          <NavLink
-            to="/"
-            className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-medium text-zinc-300 hover:text-white transition-colors">
-          </NavLink>
+        <div className="flex items-center gap-2.5">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300">
+                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span className="font-medium text-white">{user?.name}</span>
+              </div>
+              <button
+                onClick={logout}
+                className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-700/80 text-xs font-medium text-zinc-300 hover:text-white transition-colors"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Link
+                to="/login"
+                className="px-3.5 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-medium text-zinc-200 hover:text-white transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/register"
+                className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition-colors"
+              >
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       </header>
     </>
