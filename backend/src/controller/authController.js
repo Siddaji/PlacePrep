@@ -19,7 +19,7 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    if (password !== confirmPassword) {
+    if (confirmPassword !== undefined && password !== confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "Passwords do not match.",
@@ -65,9 +65,14 @@ export const registerUser = async (req, res) => {
     // Send verification email
     await sendVerificationEmail(normalizedEmail, rawToken);
 
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+    const verificationUrl = `${frontendUrl}/verify-email?token=${rawToken}`;
+
     return res.status(201).json({
       success: true,
       message: "Registration successful. Please check your email to verify your account.",
+      verificationToken: rawToken,
+      verificationUrl,
     });
   } catch (error) {
     console.error("[Auth Controller] Register Error:", error);
@@ -85,7 +90,7 @@ export const registerUser = async (req, res) => {
  */
 export const verifyEmail = async (req, res) => {
   try {
-    const rawToken = req.query.token || req.body.token;
+    const rawToken = req.query.token || req.body?.token;
 
     if (!rawToken) {
       return res.status(400).json({
@@ -94,17 +99,27 @@ export const verifyEmail = async (req, res) => {
       });
     }
 
-    const hashedToken = hashToken(rawToken);
+    const tokenString = String(rawToken).trim();
+    const hashedToken = hashToken(tokenString);
 
     const user = await User.findOne({
-      verificationToken: hashedToken,
-      verificationTokenExpiry: { $gt: Date.now() },
+      $or: [
+        { verificationToken: hashedToken },
+        { verificationToken: tokenString },
+      ],
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "Verification link is invalid or expired.",
+      });
+    }
+
+    if (user.verificationTokenExpiry && new Date(user.verificationTokenExpiry).getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "Verification link has expired. Please request a new verification link.",
       });
     }
 
@@ -203,6 +218,9 @@ export const resendVerificationEmail = async (req, res) => {
     const normalizedEmail = email.toLowerCase().trim();
     const user = await User.findOne({ email: normalizedEmail });
 
+    let verificationUrl = null;
+    let verificationToken = null;
+
     if (user && !user.isVerified) {
       const { rawToken, hashedToken } = generateRandomToken();
       user.verificationToken = hashedToken;
@@ -210,12 +228,18 @@ export const resendVerificationEmail = async (req, res) => {
       await user.save();
 
       await sendVerificationEmail(normalizedEmail, rawToken);
+
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:3000";
+      verificationToken = rawToken;
+      verificationUrl = `${frontendUrl}/verify-email?token=${rawToken}`;
     }
 
     // Safe response (does not leak account presence)
     return res.status(200).json({
       success: true,
       message: "If an unverified account exists with that email, a verification link has been sent.",
+      verificationToken,
+      verificationUrl,
     });
   } catch (error) {
     console.error("[Auth Controller] Resend Verification Error:", error);
@@ -302,17 +326,27 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    const hashedToken = hashToken(token);
+    const tokenString = String(token || "").trim();
+    const hashedToken = hashToken(tokenString);
 
     const user = await User.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpiry: { $gt: Date.now() },
+      $or: [
+        { resetPasswordToken: hashedToken },
+        { resetPasswordToken: tokenString },
+      ],
     });
 
     if (!user) {
       return res.status(400).json({
         success: false,
         message: "Password reset link is invalid or expired.",
+      });
+    }
+
+    if (user.resetPasswordExpiry && new Date(user.resetPasswordExpiry).getTime() < Date.now()) {
+      return res.status(400).json({
+        success: false,
+        message: "Password reset link has expired. Please request a new one.",
       });
     }
 
