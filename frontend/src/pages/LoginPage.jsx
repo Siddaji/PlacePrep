@@ -85,19 +85,7 @@ function LoginPage() {
           {error && (
             <div className="p-3.5 rounded-xl bg-red-950/50 border border-red-900/80 text-red-200 text-xs sm:text-sm flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
-              <div className="space-y-2 flex-1">
-                <p className="leading-snug">{error}</p>
-                {isUnverified && (
-                  <button
-                    type="button"
-                    onClick={handleResend}
-                    disabled={resending}
-                    className="inline-flex items-center text-xs font-semibold text-sky-400 hover:text-sky-300 underline underline-offset-2 disabled:opacity-50"
-                  >
-                    {resending ? "Sending verification email..." : "Resend verification email"}
-                  </button>
-                )}
-              </div>
+              <p className="leading-snug">{error}</p>
             </div>
           )}
 
@@ -135,12 +123,6 @@ function LoginPage() {
                 <label className="block text-xs font-medium text-zinc-300">
                   Password
                 </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs text-zinc-400 hover:text-zinc-200 transition-colors"
-                >
-                  Forgot password?
-                </Link>
               </div>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">

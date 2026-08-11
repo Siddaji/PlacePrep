@@ -77,15 +77,15 @@ function RegisterPage() {
           {success ? (
             <div className="space-y-5 text-center py-3">
               <div className="w-14 h-14 rounded-2xl bg-emerald-950/80 border border-emerald-800/80 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
-                <MailCheck className="w-7 h-7" />
+                <CheckCircle2 className="w-7 h-7" />
               </div>
               <div className="space-y-2">
-                <h2 className="text-lg font-bold text-white">Check Your Email</h2>
+                <h2 className="text-lg font-bold text-white">Account Created Successfully</h2>
                 <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed">
-                  We've sent a verification link to <span className="font-semibold text-white">{email}</span>.
+                  Welcome to PlacePrep! Your account for <span className="font-semibold text-white">{email}</span> is ready.
                 </p>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Please click the link in the email to verify your account before logging in.
+                  You can now log in directly with your credentials.
                 </p>
               </div>
               <div className="pt-2">
@@ -93,7 +93,7 @@ function RegisterPage() {
                   to="/login"
                   className="w-full py-2.5 px-5 bg-white text-black font-semibold text-sm rounded-xl hover:bg-zinc-100 transition-all flex items-center justify-center gap-2"
                 >
-                  <span>Go to Sign In</span>
+                  <span>Proceed to Sign In</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
