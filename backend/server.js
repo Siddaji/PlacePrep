@@ -12,6 +12,7 @@ import roadmapRoutes from "./src/routes/roadmapRoutes.js";
 import companyProblemRoutes from "./src/routes/companyProblemRoutes.js";
 import oopRoutes from "./src/routes/oopRoutes.js";
 import osRoutes from "./src/routes/osRoutes.js";
+import progressRoutes from "./src/routes/progressRoutes.js";
 
 const app = express();
 connectDB();
@@ -27,6 +28,7 @@ app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/company-problems", companyProblemRoutes);
 app.use("/api/oop", oopRoutes);
 app.use("/api/os", osRoutes);
+app.use("/api/progress", progressRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));

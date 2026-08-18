@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getOsModules } from "../services/osService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const SOLVED_STORAGE_KEY = "placeprep-os-solved-topics";
 
 function OsPage() {
+  const { isAuthenticated } = useAuth();
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,6 +25,20 @@ function OsPage() {
     }
   });
 
+  const loadProgressFromCloud = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("os");
+        if (res && res.success && Array.isArray(res.progress)) {
+          setSolvedTopicIds(new Set(res.progress));
+          localStorage.setItem(SOLVED_STORAGE_KEY, JSON.stringify(res.progress));
+        }
+      } catch (err) {
+        console.error("Failed to load OS cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     getOsModules()
       .then((data) => {
@@ -38,6 +55,19 @@ function OsPage() {
         console.error("Failed to load OS modules", err);
         setLoading(false);
       });
+
+    loadProgressFromCloud();
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail.os)) {
+        setSolvedTopicIds(new Set(e.detail.os));
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
   }, []);
 
   const toggleModule = (modId) => {
@@ -48,9 +78,11 @@ function OsPage() {
   };
 
   const toggleSolved = (topicId) => {
+    const isCurrentlySolved = solvedTopicIds.has(topicId);
+
     setSolvedTopicIds((prev) => {
       const next = new Set(prev);
-      if (next.has(topicId)) {
+      if (isCurrentlySolved) {
         next.delete(topicId);
       } else {
         next.add(topicId);
@@ -62,6 +94,14 @@ function OsPage() {
       }
       return next;
     });
+
+    if (isAuthenticated) {
+      if (isCurrentlySolved) {
+        progressService.uncompleteResource("os", topicId).catch(err => console.error("OS uncomplete error:", err));
+      } else {
+        progressService.completeResource("os", topicId).catch(err => console.error("OS complete error:", err));
+      }
+    }
   };
 
   // Flatten all topics for count and solved calculation
@@ -288,6 +328,7 @@ function OsPage() {
                           >
                             {/* Topic Title & Difficulty */}
                             <div className="flex flex-wrap items-center gap-2.5 min-w-0 flex-1">
+                              {/* Solved Checkbox Toggle */}
                               <button
                                 onClick={() => toggleSolved(topic.id)}
                                 className={`flex items-center justify-center h-4 w-4 rounded border transition-colors shrink-0 ${
@@ -317,8 +358,29 @@ function OsPage() {
                               {getDifficultyBadge(topic.difficulty)}
                             </div>
 
-                            {/* Actions: Verified GFG Article Button */}
+                            {/* Actions: Solved Button & Verified GFG Article Button */}
                             <div className="flex items-center gap-3 text-xs font-medium text-zinc-400 shrink-0">
+                              {/* Solved Toggle Badge Button */}
+                              <button
+                                onClick={() => toggleSolved(topic.id)}
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                                  isSolved
+                                    ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 hover:bg-emerald-900/60"
+                                    : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-zinc-200 hover:border-zinc-700"
+                                }`}
+                              >
+                                {isSolved ? (
+                                  <>
+                                    <svg className="w-3 h-3 text-emerald-400 fill-current" viewBox="0 0 24 24">
+                                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                    </svg>
+                                    <span>Solved</span>
+                                  </>
+                                ) : (
+                                  <span>Mark Solved</span>
+                                )}
+                              </button>
+
                               {/* Read Article Link (Only shown if articleUrl exists) */}
                               {topic.articleUrl ? (
                                 <a

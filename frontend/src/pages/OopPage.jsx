@@ -1,8 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getOopModules } from "../services/oopService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 function OopPage() {
+  const { isAuthenticated } = useAuth();
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,6 +25,20 @@ function OopPage() {
     }
   });
 
+  const loadProgressFromCloud = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("oop");
+        if (res && res.success && Array.isArray(res.progress)) {
+          setSolvedTopicIds(new Set(res.progress));
+          localStorage.setItem(SOLVED_STORAGE_KEY, JSON.stringify(res.progress));
+        }
+      } catch (err) {
+        console.error("Failed to load OOP cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     getOopModules()
       .then((data) => {
@@ -38,6 +55,19 @@ function OopPage() {
         console.error("Failed to load OOP modules", err);
         setLoading(false);
       });
+
+    loadProgressFromCloud();
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail.oop)) {
+        setSolvedTopicIds(new Set(e.detail.oop));
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
   }, []);
 
   const toggleModule = (modId) => {
@@ -48,9 +78,11 @@ function OopPage() {
   };
 
   const toggleSolved = (topicId) => {
+    const isCurrentlySolved = solvedTopicIds.has(topicId);
+
     setSolvedTopicIds((prev) => {
       const next = new Set(prev);
-      if (next.has(topicId)) {
+      if (isCurrentlySolved) {
         next.delete(topicId);
       } else {
         next.add(topicId);
@@ -62,6 +94,14 @@ function OopPage() {
       }
       return next;
     });
+
+    if (isAuthenticated) {
+      if (isCurrentlySolved) {
+        progressService.uncompleteResource("oop", topicId).catch(err => console.error("OOP uncomplete error:", err));
+      } else {
+        progressService.completeResource("oop", topicId).catch(err => console.error("OOP complete error:", err));
+      }
+    }
   };
 
   // Flatten all topics for count and solved calculation

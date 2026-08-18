@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getSubjects } from "../services/subjectService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const STUDIED_KEY = "placeprep-subjects-studied";
 
@@ -320,6 +322,7 @@ function SubjectSection({ subject, studiedIds, onToggleStudied }) {
 // ── Page ─────────────────────────────────────────────────────
 
 function SubjectsPage() {
+  const { isAuthenticated } = useAuth();
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading]   = useState(true);
 
@@ -330,20 +333,57 @@ function SubjectsPage() {
     } catch { return new Set(); }
   });
 
+  const loadProgressFromCloud = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("subjects");
+        if (res && res.success && Array.isArray(res.progress)) {
+          setStudiedIds(new Set(res.progress));
+          localStorage.setItem(STUDIED_KEY, JSON.stringify(res.progress));
+        }
+      } catch (err) {
+        console.error("Failed to load Subjects cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated]);
+
   useEffect(() => {
     getSubjects()
       .then(data  => { setSubjects(data); setLoading(false); })
       .catch(err  => { console.error(err); setLoading(false); });
+
+    loadProgressFromCloud();
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail.subjects)) {
+        setStudiedIds(new Set(e.detail.subjects));
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
   }, []);
 
   function toggleStudied(id) {
+    const isCurrentlyStudied = studiedIds.has(id);
+
     setStudiedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
+      if (isCurrentlyStudied) next.delete(id);
       else next.add(id);
       localStorage.setItem(STUDIED_KEY, JSON.stringify([...next]));
       return next;
     });
+
+    if (isAuthenticated) {
+      if (isCurrentlyStudied) {
+        progressService.uncompleteResource("subjects", String(id)).catch(err => console.error("Subjects uncomplete error:", err));
+      } else {
+        progressService.completeResource("subjects", String(id)).catch(err => console.error("Subjects complete error:", err));
+      }
+    }
   }
 
   const allTopics    = subjects.flatMap(s => s.topics);

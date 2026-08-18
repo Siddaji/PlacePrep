@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { getProblems } from "../services/problemService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import FilterBar from "../components/dsa/FilterBar.jsx";
 import ProblemCard from "../components/dsa/ProblemCard.jsx";
 import EmptyState from "../components/common/EmptyState.jsx";
@@ -26,6 +28,7 @@ function StatBox({ label, value, color }) {
 }
 
 function DsaPage() {
+  const { isAuthenticated } = useAuth();
   const [problems, setProblems]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
@@ -37,24 +40,64 @@ function DsaPage() {
   const [solvedIds, setSolvedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? new Set(JSON.parse(saved)) : new Set();
+      return saved ? new Set(JSON.parse(saved).map(id => Number(id) || id)) : new Set();
     } catch { return new Set(); }
   });
+
+  const loadProgressFromCloud = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("dsa");
+        if (res && res.success && Array.isArray(res.progress)) {
+          const numIds = res.progress.map(id => Number(id) || id);
+          setSolvedIds(new Set(numIds));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(numIds));
+        }
+      } catch (err) {
+        console.error("Failed to load DSA cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     getProblems()
       .then(data => { setProblems(data); setLoading(false); })
       .catch(err => { console.error(err); setLoading(false); });
+
+    loadProgressFromCloud();
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail.dsa)) {
+        const numIds = e.detail.dsa.map(id => Number(id) || id);
+        setSolvedIds(new Set(numIds));
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
   }, []);
 
   function toggleSolved(id) {
+    const numericId = Number(id) || id;
+    const isCurrentlySolved = solvedIds.has(numericId);
+
     setSolvedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (isCurrentlySolved) next.delete(numericId);
+      else next.add(numericId);
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
       return next;
     });
+
+    if (isAuthenticated) {
+      if (isCurrentlySolved) {
+        progressService.uncompleteResource("dsa", String(id)).catch(err => console.error("DSA uncomplete sync error:", err));
+      } else {
+        progressService.completeResource("dsa", String(id)).catch(err => console.error("DSA complete sync error:", err));
+      }
+    }
   }
 
   const clearFilters = () => {

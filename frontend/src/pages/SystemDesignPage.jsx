@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Check,
@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 
 import { getSystemDesignTopics } from "../services/systemDesignService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const STUDIED_KEY = "placeprep-sd-studied";
 const STREAK_KEY  = "placeprep-sd-streak";
@@ -43,6 +45,7 @@ function updateStreak() {
 // ── Main System Design Page ──────────────────────────────────
 
 export default function SystemDesignPage() {
+  const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [topics, setTopics]                 = useState([]);
   const [loading, setLoading]               = useState(true);
@@ -53,9 +56,24 @@ export default function SystemDesignPage() {
   const [studiedIds, setStudiedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STUDIED_KEY);
-      return saved ? new Set(JSON.parse(saved)) : new Set();
+      return saved ? new Set(JSON.parse(saved).map(id => Number(id) || id)) : new Set();
     } catch { return new Set(); }
   });
+
+  const loadProgressFromCloud = useCallback(async () => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("system-design");
+        if (res && res.success && Array.isArray(res.progress)) {
+          const ids = res.progress.map(id => Number(id) || id);
+          setStudiedIds(new Set(ids));
+          localStorage.setItem(STUDIED_KEY, JSON.stringify(ids));
+        }
+      } catch (err) {
+        console.error("Failed to load System Design cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     getSystemDesignTopics()
@@ -67,21 +85,47 @@ export default function SystemDesignPage() {
         console.error(err);
         setLoading(false);
       });
+
+    loadProgressFromCloud();
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail["system-design"])) {
+        const ids = e.detail["system-design"].map(id => Number(id) || id);
+        setStudiedIds(new Set(ids));
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
   }, []);
 
   function toggleStudied(id, e) {
     if (e) e.stopPropagation();
+    const numericId = Number(id) || id;
+    const isCurrentlyStudied = studiedIds.has(numericId);
+
     setStudiedIds(prev => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else {
-        next.add(id);
+      if (isCurrentlyStudied) {
+        next.delete(numericId);
+      } else {
+        next.add(numericId);
         const updated = updateStreak();
         setStreak(updated);
       }
       localStorage.setItem(STUDIED_KEY, JSON.stringify([...next]));
       return next;
     });
+
+    if (isAuthenticated) {
+      if (isCurrentlyStudied) {
+        progressService.uncompleteResource("system-design", String(id)).catch(err => console.error("SD uncomplete error:", err));
+      } else {
+        progressService.completeResource("system-design", String(id)).catch(err => console.error("SD complete error:", err));
+      }
+    }
   }
 
   const filteredTopics = useMemo(() => {

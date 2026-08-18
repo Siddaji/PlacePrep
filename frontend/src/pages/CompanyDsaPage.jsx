@@ -1,6 +1,8 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getCompanyProblemsData } from "../services/companyProblemService.js";
+import { progressService } from "../services/progressService.js";
+import { useAuth } from "../context/AuthContext.jsx";
 import LoadingState from "../components/common/LoadingState.jsx";
 import EmptyState from "../components/common/EmptyState.jsx";
 
@@ -79,6 +81,7 @@ function getProblemLink(title, platform) {
 }
 
 export default function CompanyDsaPage() {
+  const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [data, setData] = useState(null);
@@ -93,7 +96,7 @@ export default function CompanyDsaPage() {
   const [solvedIds, setSolvedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved) : [];
+      return saved ? JSON.parse(saved).map(id => Number(id) || id) : [];
     } catch {
       return [];
     }
@@ -108,12 +111,39 @@ export default function CompanyDsaPage() {
     }
   });
 
+  const loadProgressFromCloud = useCallback(async (currentData) => {
+    if (isAuthenticated) {
+      try {
+        const res = await progressService.getProgress("company-dsa");
+        if (res && res.success && Array.isArray(res.progress)) {
+          const ids = res.progress.map(id => Number(id) || id);
+          setSolvedIds(ids);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+
+          const problemsList = currentData?.problems || data?.problems;
+          if (problemsList && ids.length > 0) {
+            const nextSet = new Set();
+            problemsList.forEach((p) => {
+              if (ids.includes(p.id) || ids.includes(String(p.id))) {
+                nextSet.add(p.title.trim().toLowerCase());
+              }
+            });
+            setSolvedTitles(nextSet);
+            localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(Array.from(nextSet)));
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load Company DSA cloud progress:", err);
+      }
+    }
+  }, [isAuthenticated, data]);
+
   useEffect(() => {
     const compParam = searchParams.get("company");
     if (compParam !== activeCompanyId) {
       setActiveCompanyId(compParam);
     }
-  }, [searchParams]);
+  }, [searchParams, activeCompanyId]);
 
   useEffect(() => {
     getCompanyProblemsData()
@@ -125,7 +155,7 @@ export default function CompanyDsaPage() {
           setSolvedTitles((prevSet) => {
             const nextSet = new Set(prevSet);
             res.problems.forEach((p) => {
-              if (solvedIds.includes(p.id)) {
+              if (solvedIds.includes(p.id) || solvedIds.includes(String(p.id))) {
                 nextSet.add(p.title.trim().toLowerCase());
               }
             });
@@ -137,13 +167,36 @@ export default function CompanyDsaPage() {
             return nextSet;
           });
         }
+
+        loadProgressFromCloud(res);
       })
       .catch((err) => {
         console.error(err);
         setError(err.message);
         setLoading(false);
       });
-  }, []);
+  }, [loadProgressFromCloud]);
+
+  // Listen for background sync updates
+  useEffect(() => {
+    const handleProgressUpdate = (e) => {
+      if (e.detail && Array.isArray(e.detail["company-dsa"])) {
+        const ids = e.detail["company-dsa"].map(id => Number(id) || id);
+        setSolvedIds(ids);
+        if (data?.problems) {
+          const nextSet = new Set();
+          data.problems.forEach((p) => {
+            if (ids.includes(p.id) || ids.includes(String(p.id))) {
+              nextSet.add(p.title.trim().toLowerCase());
+            }
+          });
+          setSolvedTitles(nextSet);
+        }
+      }
+    };
+    window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
+    return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
+  }, [data]);
 
   const handleOpenCompany = (companyId) => {
     setActiveCompanyId(companyId);
@@ -158,7 +211,7 @@ export default function CompanyDsaPage() {
 
   const isProblemSolved = (prob) => {
     const normTitle = prob.title.trim().toLowerCase();
-    return solvedTitles.has(normTitle) || solvedIds.includes(prob.id);
+    return solvedTitles.has(normTitle) || solvedIds.includes(prob.id) || solvedIds.includes(String(prob.id));
   };
 
   const toggleSolved = (prob, e) => {
@@ -191,7 +244,7 @@ export default function CompanyDsaPage() {
     setSolvedIds((prevIds) => {
       let nextIds;
       if (currentlySolved) {
-        nextIds = prevIds.filter((id) => !matchingIds.includes(id));
+        nextIds = prevIds.filter((id) => !matchingIds.includes(id) && !matchingIds.includes(Number(id)));
       } else {
         nextIds = Array.from(new Set([...prevIds, ...matchingIds]));
       }
@@ -202,6 +255,16 @@ export default function CompanyDsaPage() {
       }
       return nextIds;
     });
+
+    if (isAuthenticated) {
+      matchingIds.forEach((id) => {
+        if (currentlySolved) {
+          progressService.uncompleteResource("company-dsa", String(id)).catch(err => console.error("Company DSA uncomplete error:", err));
+        } else {
+          progressService.completeResource("company-dsa", String(id)).catch(err => console.error("Company DSA complete error:", err));
+        }
+      });
+    }
   };
 
   const companyStatsMap = useMemo(() => {
