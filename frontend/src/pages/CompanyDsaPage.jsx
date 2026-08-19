@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getCompanyProblemsData } from "../services/companyProblemService.js";
-import { progressService } from "../services/progressService.js";
+import { progressService, normalizeProgressId } from "../services/progressService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import LoadingState from "../components/common/LoadingState.jsx";
 import EmptyState from "../components/common/EmptyState.jsx";
@@ -50,7 +50,6 @@ const RefreshCw = ({ className = "w-4 h-4" }) => (
 );
 
 const STORAGE_KEY = "placeprep-company-problems-solved";
-const TITLE_STORAGE_KEY = "placeprep-company-problems-solved-titles";
 
 const COMPANY_DESCRIPTIONS = {
   microsoft: "Frequently asked interview questions covering binary trees, string algorithms, dynamic programming, and core data structures.",
@@ -67,7 +66,7 @@ const DIFFICULTY_STYLES = {
   Hard: "bg-rose-500/10 text-rose-400 border-rose-500/20",
 };
 
-function getProblemLink(title, platform) {
+function generateProblemLink(title, platform) {
   const slug = title
     .toLowerCase()
     .trim()
@@ -79,6 +78,109 @@ function getProblemLink(title, platform) {
   }
   return `https://leetcode.com/problems/${slug}/`;
 }
+
+// Memoized Problem Row Component to avoid re-rendering untouched rows on toggle
+const ProblemRow = React.memo(function ProblemRow({
+  prob,
+  isSolved,
+  link,
+  askedCompanies,
+  onToggle,
+}) {
+  return (
+    <tr
+      className={`transition-colors ${
+        isSolved ? "bg-emerald-950/10 hover:bg-emerald-950/20" : "hover:bg-zinc-800/40"
+      }`}
+    >
+      {/* Checkbox */}
+      <td className="py-3.5 px-4 text-center">
+        <button
+          onClick={(e) => onToggle(prob, e)}
+          className="p-1 rounded transition-transform"
+          aria-label={isSolved ? "Mark as unsolved" : "Mark as solved"}
+        >
+          <div
+            className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+              isSolved
+                ? "bg-emerald-600 border-emerald-500 text-white"
+                : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
+            }`}
+          >
+            {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+          </div>
+        </button>
+      </td>
+
+      {/* ID */}
+      <td className="py-3.5 px-3 text-center font-mono text-zinc-400 text-xs sm:text-sm">
+        {prob.id}
+      </td>
+
+      {/* Title + Asked in Companies */}
+      <td className="py-3.5 px-4 font-semibold">
+        <div className="flex flex-col gap-0.5">
+          <a
+            href={link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`hover:text-white transition-colors ${
+              isSolved ? "text-zinc-500 line-through font-normal" : "text-zinc-100"
+            }`}
+          >
+            {prob.title}
+          </a>
+          {askedCompanies.length > 0 && (
+            <span className="text-xs font-normal text-zinc-400">
+              Asked in {askedCompanies.join(", ")}
+              {isSolved && (
+                <span className="text-emerald-400 font-medium ml-1.5">✓ Solved</span>
+              )}
+            </span>
+          )}
+        </div>
+      </td>
+
+      {/* Tags */}
+      <td className="py-3.5 px-4">
+        <div className="flex flex-wrap gap-1.5">
+          {prob.tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[13px] font-sans font-medium bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 px-2.5 py-1 rounded-md hover:bg-zinc-800 transition-colors"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </td>
+
+      {/* Difficulty */}
+      <td className="py-3.5 px-3 text-center">
+        <span
+          className={`text-xs sm:text-sm font-semibold px-2.5 py-0.5 rounded border ${
+            DIFFICULTY_STYLES[prob.difficulty] || "bg-zinc-800 text-zinc-300"
+          }`}
+        >
+          {prob.difficulty}
+        </span>
+      </td>
+
+      {/* Link Action */}
+      <td className="py-3.5 px-4 text-right">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-zinc-200 hover:text-white transition-colors"
+        >
+          <span>Solve</span>
+          <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+        </a>
+      </td>
+    </tr>
+  );
+});
 
 export default function CompanyDsaPage() {
   const { isAuthenticated } = useAuth();
@@ -93,206 +195,212 @@ export default function CompanyDsaPage() {
   const [searchProblem, setSearchProblem] = useState("");
   const [difficultyFilter, setDifficultyFilter] = useState("ALL");
 
+  // Fast Set storage for solved problem IDs
   const [solvedIds, setSolvedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? JSON.parse(saved).map(id => Number(id) || id) : [];
-    } catch {
-      return [];
-    }
-  });
-
-  const [solvedTitles, setSolvedTitles] = useState(() => {
-    try {
-      const saved = localStorage.getItem(TITLE_STORAGE_KEY);
-      return saved ? new Set(JSON.parse(saved)) : new Set();
+      if (!saved) return new Set();
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return new Set();
+      const clean = parsed.map(normalizeProgressId).filter((id) => id !== null);
+      return new Set(clean);
     } catch {
       return new Set();
     }
   });
 
-  const loadProgressFromCloud = useCallback(async (currentData) => {
+  // Pre-index data structures once when dataset loads
+  const indexedData = useMemo(() => {
+    if (!data?.problems) {
+      return {
+        problemsByCompany: {},
+        companyOccurrences: {},
+        problemLinks: {},
+        idToMatchingIds: new Map(),
+      };
+    }
+
+    const problemsByCompany = {};
+    const titleToIds = new Map();
+    const companyOccurrences = {};
+    const problemLinks = {};
+
+    for (let i = 0; i < data.problems.length; i++) {
+      const p = data.problems[i];
+      const normTitle = p.title.trim().toLowerCase();
+
+      // Index by company
+      if (!problemsByCompany[p.companyId]) {
+        problemsByCompany[p.companyId] = [];
+      }
+      problemsByCompany[p.companyId].push(p);
+
+      // Index by title
+      if (!titleToIds.has(normTitle)) {
+        titleToIds.set(normTitle, []);
+      }
+      titleToIds.get(normTitle).push(p.id);
+
+      // Index company occurrences
+      if (!companyOccurrences[normTitle]) {
+        companyOccurrences[normTitle] = [];
+      }
+      if (!companyOccurrences[normTitle].includes(p.company)) {
+        companyOccurrences[normTitle].push(p.company);
+      }
+
+      // Pre-compute link
+      problemLinks[p.id] = generateProblemLink(p.title, p.platform);
+    }
+
+    // Map each problem ID to all related problem IDs sharing the same title
+    const idToMatchingIds = new Map();
+    for (let i = 0; i < data.problems.length; i++) {
+      const p = data.problems[i];
+      const normTitle = p.title.trim().toLowerCase();
+      idToMatchingIds.set(p.id, titleToIds.get(normTitle) || [p.id]);
+    }
+
+    return {
+      problemsByCompany,
+      companyOccurrences,
+      problemLinks,
+      idToMatchingIds,
+    };
+  }, [data]);
+
+  const loadProgressFromCloud = useCallback(async () => {
     if (isAuthenticated) {
       try {
         const res = await progressService.getProgress("company-dsa");
         if (res && res.success && Array.isArray(res.progress)) {
-          const ids = res.progress.map(id => Number(id) || id);
-          setSolvedIds(ids);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-
-          const problemsList = currentData?.problems || data?.problems;
-          if (problemsList && ids.length > 0) {
-            const nextSet = new Set();
-            problemsList.forEach((p) => {
-              if (ids.includes(p.id) || ids.includes(String(p.id))) {
-                nextSet.add(p.title.trim().toLowerCase());
-              }
-            });
-            setSolvedTitles(nextSet);
-            localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(Array.from(nextSet)));
-          }
+          const cleanIds = res.progress.map(normalizeProgressId).filter((id) => id !== null);
+          setSolvedIds(new Set(cleanIds));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanIds));
         }
       } catch (err) {
         console.error("Failed to load Company DSA cloud progress:", err);
       }
     }
-  }, [isAuthenticated, data]);
+  }, [isAuthenticated]);
 
+  // Keep active company in sync with search params
   useEffect(() => {
     const compParam = searchParams.get("company");
     if (compParam !== activeCompanyId) {
       setActiveCompanyId(compParam);
     }
-  }, [searchParams, activeCompanyId]);
+  }, [searchParams]);
 
   useEffect(() => {
     getCompanyProblemsData()
       .then((res) => {
         setData(res);
         setLoading(false);
-
-        if (res?.problems && solvedIds.length > 0) {
-          setSolvedTitles((prevSet) => {
-            const nextSet = new Set(prevSet);
-            res.problems.forEach((p) => {
-              if (solvedIds.includes(p.id) || solvedIds.includes(String(p.id))) {
-                nextSet.add(p.title.trim().toLowerCase());
-              }
-            });
-            try {
-              localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(Array.from(nextSet)));
-            } catch (e) {
-              console.error(e);
-            }
-            return nextSet;
-          });
-        }
-
-        loadProgressFromCloud(res);
       })
       .catch((err) => {
         console.error(err);
         setError(err.message);
         setLoading(false);
       });
+
+    loadProgressFromCloud();
   }, [loadProgressFromCloud]);
 
   // Listen for background sync updates
   useEffect(() => {
     const handleProgressUpdate = (e) => {
       if (e.detail && Array.isArray(e.detail["company-dsa"])) {
-        const ids = e.detail["company-dsa"].map(id => Number(id) || id);
-        setSolvedIds(ids);
-        if (data?.problems) {
-          const nextSet = new Set();
-          data.problems.forEach((p) => {
-            if (ids.includes(p.id) || ids.includes(String(p.id))) {
-              nextSet.add(p.title.trim().toLowerCase());
-            }
-          });
-          setSolvedTitles(nextSet);
-        }
+        const cleanIds = e.detail["company-dsa"].map(normalizeProgressId).filter((id) => id !== null);
+        setSolvedIds(new Set(cleanIds));
       }
     };
     window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
     return () => window.removeEventListener("placeprep-progress-updated", handleProgressUpdate);
-  }, [data]);
+  }, []);
 
-  const handleOpenCompany = (companyId) => {
+  const handleOpenCompany = useCallback((companyId) => {
     setActiveCompanyId(companyId);
     setSearchParams({ company: companyId }, { replace: true });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [setSearchParams]);
 
-  const handleBackToGrid = () => {
+  const handleBackToGrid = useCallback(() => {
     setActiveCompanyId(null);
     setSearchParams({}, { replace: true });
-  };
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [setSearchParams]);
 
-  const isProblemSolved = (prob) => {
-    const normTitle = prob.title.trim().toLowerCase();
-    return solvedTitles.has(normTitle) || solvedIds.includes(prob.id) || solvedIds.includes(String(prob.id));
-  };
-
-  const toggleSolved = (prob, e) => {
+  // Instant O(1) toggle solved handler
+  const toggleSolved = useCallback((prob, e) => {
     if (e) e.stopPropagation();
-    const normTitle = prob.title.trim().toLowerCase();
 
-    const matchingIds = data?.problems
-      ? data.problems
-          .filter((p) => p.title.trim().toLowerCase() === normTitle)
-          .map((p) => p.id)
-      : [prob.id];
+    const matchingIds = indexedData.idToMatchingIds.get(prob.id) || [prob.id];
+    const isCurrentlySolved = solvedIds.has(prob.id) || solvedIds.has(Number(prob.id)) || solvedIds.has(String(prob.id));
 
-    const currentlySolved = isProblemSolved(prob);
-
-    setSolvedTitles((prev) => {
+    // 1. Optimistic instant UI update
+    setSolvedIds((prev) => {
       const next = new Set(prev);
-      if (currentlySolved) {
-        next.delete(normTitle);
-      } else {
-        next.add(normTitle);
-      }
+      matchingIds.forEach((id) => {
+        const numId = Number(id);
+        if (isCurrentlySolved) {
+          next.delete(id);
+          next.delete(String(id));
+          if (!isNaN(numId)) next.delete(numId);
+        } else {
+          next.add(id);
+          if (!isNaN(numId)) next.add(numId);
+        }
+      });
       try {
-        localStorage.setItem(TITLE_STORAGE_KEY, JSON.stringify(Array.from(next)));
+        const savedArray = Array.from(next).map(normalizeProgressId).filter(Boolean);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(savedArray));
       } catch (err) {
         console.error(err);
       }
       return next;
     });
 
-    setSolvedIds((prevIds) => {
-      let nextIds;
-      if (currentlySolved) {
-        nextIds = prevIds.filter((id) => !matchingIds.includes(id) && !matchingIds.includes(Number(id)));
-      } else {
-        nextIds = Array.from(new Set([...prevIds, ...matchingIds]));
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextIds));
-      } catch (err) {
-        console.error(err);
-      }
-      return nextIds;
-    });
-
+    // 2. Asynchronous cloud sync in background
     if (isAuthenticated) {
       matchingIds.forEach((id) => {
-        if (currentlySolved) {
-          progressService.uncompleteResource("company-dsa", String(id)).catch(err => console.error("Company DSA uncomplete error:", err));
+        const strId = String(id);
+        if (isCurrentlySolved) {
+          progressService.uncompleteResource("company-dsa", strId).catch((err) =>
+            console.error("Company DSA uncomplete error:", err)
+          );
         } else {
-          progressService.completeResource("company-dsa", String(id)).catch(err => console.error("Company DSA complete error:", err));
+          progressService.completeResource("company-dsa", strId).catch((err) =>
+            console.error("Company DSA complete error:", err)
+          );
         }
       });
     }
-  };
+  }, [indexedData, solvedIds, isAuthenticated]);
 
+  // Fast O(companies) single-pass statistics calculation
   const companyStatsMap = useMemo(() => {
-    if (!data?.problems || !data?.companies) return {};
+    if (!data?.companies) return {};
+    const { problemsByCompany } = indexedData;
     const map = {};
-    data.companies.forEach((comp) => {
-      const compProbs = data.problems.filter((p) => p.companyId === comp.id);
-      const solved = compProbs.filter((p) => isProblemSolved(p)).length;
+
+    for (let i = 0; i < data.companies.length; i++) {
+      const comp = data.companies[i];
+      const compProbs = problemsByCompany[comp.id] || [];
+      let solved = 0;
+      for (let j = 0; j < compProbs.length; j++) {
+        const pid = compProbs[j].id;
+        if (solvedIds.has(pid) || solvedIds.has(Number(pid)) || solvedIds.has(String(pid))) {
+          solved++;
+        }
+      }
       map[comp.id] = {
         total: comp.problemCount || compProbs.length,
         solved,
       };
-    });
+    }
     return map;
-  }, [data, solvedIds, solvedTitles]);
-
-  const companyOccurrences = useMemo(() => {
-    if (!data?.problems) return {};
-    const map = {};
-    data.problems.forEach((p) => {
-      const key = p.title.trim().toLowerCase();
-      if (!map[key]) map[key] = [];
-      if (!map[key].includes(p.company)) {
-        map[key].push(p.company);
-      }
-    });
-    return map;
-  }, [data]);
+  }, [data, indexedData, solvedIds]);
 
   const activeCompanyObj = useMemo(() => {
     if (!data?.companies || !activeCompanyId) return null;
@@ -302,30 +410,31 @@ export default function CompanyDsaPage() {
   const filteredCompanyCards = useMemo(() => {
     if (!data?.companies) return [];
     if (!searchCompany.trim()) return data.companies;
-    return data.companies.filter((c) =>
-      c.name.toLowerCase().includes(searchCompany.toLowerCase())
-    );
+    const q = searchCompany.toLowerCase();
+    return data.companies.filter((c) => c.name.toLowerCase().includes(q));
   }, [data, searchCompany]);
 
+  // Filter only the active company's ~50 problems, avoiding 1000-item scans
   const filteredProblems = useMemo(() => {
-    if (!data?.problems || !activeCompanyId) return [];
-    return data.problems.filter((p) => {
-      if (p.companyId !== activeCompanyId) return false;
+    if (!activeCompanyId) return [];
+    const compProbs = indexedData.problemsByCompany[activeCompanyId] || [];
+    if (!compProbs.length) return [];
 
-      if (difficultyFilter !== "ALL" && p.difficulty.toUpperCase() !== difficultyFilter) {
+    const q = searchProblem.trim().toLowerCase();
+    const isDiffFiltered = difficultyFilter !== "ALL";
+
+    return compProbs.filter((p) => {
+      if (isDiffFiltered && p.difficulty.toUpperCase() !== difficultyFilter) {
         return false;
       }
-
-      if (searchProblem.trim() !== "") {
-        const q = searchProblem.toLowerCase();
+      if (q) {
         const titleMatch = p.title.toLowerCase().includes(q);
-        const tagMatch = p.tags.some((t) => t.toLowerCase().includes(q));
+        const tagMatch = p.tags && p.tags.some((t) => t.toLowerCase().includes(q));
         if (!titleMatch && !tagMatch) return false;
       }
-
       return true;
     });
-  }, [data, activeCompanyId, difficultyFilter, searchProblem, solvedIds, solvedTitles]);
+  }, [indexedData, activeCompanyId, difficultyFilter, searchProblem]);
 
   if (loading) {
     return (
@@ -352,7 +461,7 @@ export default function CompanyDsaPage() {
             {activeCompanyId ? (
               <button
                 onClick={handleBackToGrid}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#121212] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors text-sm font-semibold"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#121212] border border-[#27272A] text-zinc-300 hover:text-white hover:border-zinc-700 transition-colors text-sm font-semibold cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-zinc-400" />
                 <span>All Companies</span>
@@ -379,7 +488,6 @@ export default function CompanyDsaPage() {
 
       {/* ── MAIN CONTENT ────────────────────────────────────────── */}
       <main className="max-w-6xl mx-auto px-4 sm:px-6 pt-8">
-        
         {/* ── VIEW 1: COMPANY CARDS ────────────────────────── */}
         {!activeCompanyId && (
           <div>
@@ -418,7 +526,9 @@ export default function CompanyDsaPage() {
                             {comp.name}
                           </h3>
                           <span className="text-xs sm:text-sm text-zinc-400 font-sans font-medium">
-                            {stats.solved > 0 ? `${stats.solved} / ${stats.total} solved` : `${stats.total} interview questions`}
+                            {stats.solved > 0
+                              ? `${stats.solved} / ${stats.total} solved`
+                              : `${stats.total} interview questions`}
                           </span>
                         </div>
                       </div>
@@ -449,7 +559,6 @@ export default function CompanyDsaPage() {
         {/* ── VIEW 2: PROBLEMS LIST FOR SELECTED COMPANY ────────── */}
         {activeCompanyId && activeCompanyObj && (
           <div className="space-y-6">
-            
             {/* Header Banner */}
             <div className="flex items-center justify-between border-b border-[#27272A] pb-6">
               <div className="flex items-center gap-4">
@@ -505,7 +614,7 @@ export default function CompanyDsaPage() {
                       setSearchProblem("");
                       setDifficultyFilter("ALL");
                     }}
-                    className="p-2.5 text-zinc-300 hover:text-white bg-[#121212] border border-[#27272A] rounded-lg transition-colors"
+                    className="p-2.5 text-zinc-300 hover:text-white bg-[#121212] border border-[#27272A] rounded-lg transition-colors cursor-pointer"
                     title="Reset Filters"
                   >
                     <RefreshCw className="w-4 h-4" />
@@ -534,112 +643,28 @@ export default function CompanyDsaPage() {
                   </thead>
                   <tbody className="divide-y divide-[#27272A] text-sm sm:text-[15px]">
                     {filteredProblems.map((prob) => {
-                      const isSolved = isProblemSolved(prob);
-                      const link = getProblemLink(prob.title, prob.platform);
-                      const askedCompanies = companyOccurrences[prob.title.trim().toLowerCase()] || [];
+                      const isSolved = solvedIds.has(prob.id) || solvedIds.has(Number(prob.id)) || solvedIds.has(String(prob.id));
+                      const link = indexedData.problemLinks[prob.id] || generateProblemLink(prob.title, prob.platform);
+                      const normTitle = prob.title.trim().toLowerCase();
+                      const askedCompanies = indexedData.companyOccurrences[normTitle] || [];
 
                       return (
-                        <tr
+                        <ProblemRow
                           key={prob.id}
-                          className={`transition-colors ${
-                            isSolved ? "bg-emerald-950/10 hover:bg-emerald-950/20" : "hover:bg-zinc-800/40"
-                          }`}
-                        >
-                          {/* Checkbox */}
-                          <td className="py-3.5 px-4 text-center">
-                            <button
-                              onClick={(e) => toggleSolved(prob, e)}
-                              className="p-1 rounded transition-transform"
-                            >
-                              <div
-                                className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                                  isSolved
-                                    ? "bg-emerald-600 border-emerald-500 text-white"
-                                    : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
-                                }`}
-                              >
-                                {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                              </div>
-                            </button>
-                          </td>
-
-                          {/* ID */}
-                          <td className="py-3.5 px-3 text-center font-mono text-zinc-400 text-xs sm:text-sm">
-                            {prob.id}
-                          </td>
-
-                          {/* Title + Asked in Companies */}
-                          <td className="py-3.5 px-4 font-semibold">
-                            <div className="flex flex-col gap-0.5">
-                              <a
-                                href={link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`hover:text-white transition-colors ${
-                                  isSolved ? "text-zinc-500 line-through font-normal" : "text-zinc-100"
-                                }`}
-                              >
-                                {prob.title}
-                              </a>
-                              {askedCompanies.length > 0 && (
-                                <span className="text-xs font-normal text-zinc-400">
-                                  Asked in {askedCompanies.join(", ")}
-                                  {isSolved && (
-                                    <span className="text-emerald-400 font-medium ml-1.5">✓ Solved</span>
-                                  )}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* Tags */}
-                          <td className="py-3.5 px-4">
-                            <div className="flex flex-wrap gap-1.5">
-                              {prob.tags.map((tag) => (
-                                <span
-                                  key={tag}
-                                  className="text-[13px] font-sans font-medium bg-zinc-800/80 border border-zinc-700/50 text-zinc-300 px-2.5 py-1 rounded-md hover:bg-zinc-800 transition-colors"
-                                >
-                                  {tag}
-                                </span>
-                              ))}
-                            </div>
-                          </td>
-
-                          {/* Difficulty */}
-                          <td className="py-3.5 px-3 text-center">
-                            <span
-                              className={`text-xs sm:text-sm font-semibold px-2.5 py-0.5 rounded border ${
-                                DIFFICULTY_STYLES[prob.difficulty] || "bg-zinc-800 text-zinc-300"
-                              }`}
-                            >
-                              {prob.difficulty}
-                            </span>
-                          </td>
-
-                          {/* Link Action */}
-                          <td className="py-3.5 px-4 text-right">
-                            <a
-                              href={link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-zinc-200 hover:text-white transition-colors"
-                            >
-                              <span>Solve</span>
-                              <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                            </a>
-                          </td>
-                        </tr>
+                          prob={prob}
+                          isSolved={isSolved}
+                          link={link}
+                          askedCompanies={askedCompanies}
+                          onToggle={toggleSolved}
+                        />
                       );
                     })}
                   </tbody>
                 </table>
               </div>
             )}
-
           </div>
         )}
-
       </main>
     </div>
   );

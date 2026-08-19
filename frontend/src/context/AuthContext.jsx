@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { authService } from "../services/authService.js";
-import { progressService } from "../services/progressService.js";
+import { progressService, normalizeProgressId } from "../services/progressService.js";
 
 const AuthContext = createContext(null);
 
@@ -80,22 +80,28 @@ export function AuthProvider({ children }) {
       if (cloudRes && cloudRes.success && cloudRes.progress) {
         const p = cloudRes.progress;
         if (Array.isArray(p.dsa)) {
-          localStorage.setItem("placeprep-solved", JSON.stringify(p.dsa.map((id) => Number(id) || id)));
+          const dsaIds = p.dsa.map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-solved", JSON.stringify(dsaIds));
         }
         if (Array.isArray(p["company-dsa"])) {
-          localStorage.setItem("placeprep-company-problems-solved", JSON.stringify(p["company-dsa"].map((id) => Number(id) || id)));
+          const compIds = p["company-dsa"].map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-company-problems-solved", JSON.stringify(compIds));
         }
         if (Array.isArray(p["system-design"])) {
-          localStorage.setItem("placeprep-sd-studied", JSON.stringify(p["system-design"].map((id) => Number(id) || id)));
+          const sdIds = p["system-design"].map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-sd-studied", JSON.stringify(sdIds));
         }
         if (Array.isArray(p.os)) {
-          localStorage.setItem("placeprep-os-solved-topics", JSON.stringify(p.os));
+          const osIds = p.os.map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-os-solved-topics", JSON.stringify(osIds));
         }
         if (Array.isArray(p.oop)) {
-          localStorage.setItem("placeprep-oop-solved-topics", JSON.stringify(p.oop));
+          const oopIds = p.oop.map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-oop-solved-topics", JSON.stringify(oopIds));
         }
         if (Array.isArray(p.subjects)) {
-          localStorage.setItem("placeprep-subjects-studied", JSON.stringify(p.subjects));
+          const subIds = p.subjects.map(normalizeProgressId).filter((id) => id !== null);
+          localStorage.setItem("placeprep-subjects-studied", JSON.stringify(subIds));
         }
 
         // Notify active pages of updated cloud progress

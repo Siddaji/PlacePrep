@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { getProblems } from "../services/problemService.js";
-import { progressService } from "../services/progressService.js";
+import { progressService, normalizeProgressId } from "../services/progressService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 import FilterBar from "../components/dsa/FilterBar.jsx";
 import ProblemCard from "../components/dsa/ProblemCard.jsx";
@@ -28,7 +28,7 @@ function StatBox({ label, value, color }) {
 }
 
 function DsaPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [problems, setProblems]       = useState([]);
   const [loading, setLoading]         = useState(true);
   const [search, setSearch]           = useState("");
@@ -40,8 +40,14 @@ function DsaPage() {
   const [solvedIds, setSolvedIds] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      return saved ? new Set(JSON.parse(saved).map(id => Number(id) || id)) : new Set();
-    } catch { return new Set(); }
+      if (!saved) return new Set();
+      const parsed = JSON.parse(saved);
+      if (!Array.isArray(parsed)) return new Set();
+      const cleanIds = parsed.map(normalizeProgressId).filter(id => id !== null);
+      return new Set(cleanIds);
+    } catch {
+      return new Set();
+    }
   });
 
   const loadProgressFromCloud = useCallback(async () => {
@@ -49,9 +55,9 @@ function DsaPage() {
       try {
         const res = await progressService.getProgress("dsa");
         if (res && res.success && Array.isArray(res.progress)) {
-          const numIds = res.progress.map(id => Number(id) || id);
-          setSolvedIds(new Set(numIds));
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(numIds));
+          const cleanIds = res.progress.map(normalizeProgressId).filter(id => id !== null);
+          setSolvedIds(new Set(cleanIds));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanIds));
         }
       } catch (err) {
         console.error("Failed to load DSA cloud progress:", err);
@@ -67,12 +73,12 @@ function DsaPage() {
     loadProgressFromCloud();
   }, [loadProgressFromCloud]);
 
-  // Listen for background sync updates
+  // Listen for background sync updates from AuthContext
   useEffect(() => {
     const handleProgressUpdate = (e) => {
       if (e.detail && Array.isArray(e.detail.dsa)) {
-        const numIds = e.detail.dsa.map(id => Number(id) || id);
-        setSolvedIds(new Set(numIds));
+        const cleanIds = e.detail.dsa.map(normalizeProgressId).filter(id => id !== null);
+        setSolvedIds(new Set(cleanIds));
       }
     };
     window.addEventListener("placeprep-progress-updated", handleProgressUpdate);
@@ -80,22 +86,27 @@ function DsaPage() {
   }, []);
 
   function toggleSolved(id) {
-    const numericId = Number(id) || id;
-    const isCurrentlySolved = solvedIds.has(numericId);
+    const numericId = normalizeProgressId(id);
+    if (numericId === null) return;
+    const isCurrentlySolved = solvedIds.has(numericId) || solvedIds.has(String(numericId));
 
     setSolvedIds(prev => {
       const next = new Set(prev);
-      if (isCurrentlySolved) next.delete(numericId);
-      else next.add(numericId);
+      if (isCurrentlySolved) {
+        next.delete(numericId);
+        next.delete(String(numericId));
+      } else {
+        next.add(numericId);
+      }
       localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
       return next;
     });
 
     if (isAuthenticated) {
       if (isCurrentlySolved) {
-        progressService.uncompleteResource("dsa", String(id)).catch(err => console.error("DSA uncomplete sync error:", err));
+        progressService.uncompleteResource("dsa", String(numericId)).catch(err => console.error("DSA uncomplete sync error:", err));
       } else {
-        progressService.completeResource("dsa", String(id)).catch(err => console.error("DSA complete sync error:", err));
+        progressService.completeResource("dsa", String(numericId)).catch(err => console.error("DSA complete sync error:", err));
       }
     }
   }
@@ -117,14 +128,19 @@ function DsaPage() {
   const totalCount  = problems.length;
   const progressPct = totalCount > 0 ? Math.round((solvedCount / totalCount) * 100) : 0;
 
-  const filteredProblems = problems.filter(p => {
-    const matchesSearch     = p.title.toLowerCase().includes(search.toLowerCase());
-    const matchesTopic      = topic === "All" || p.topic === topic;
-    const matchesDifficulty = difficulty === "All" || p.difficulty === difficulty;
-    const matchesPriority   = priority === "All" || p.priority === priority;
-    const matchesUnsolved   = !showUnsolved || !solvedIds.has(p.id);
-    return matchesSearch && matchesTopic && matchesDifficulty && matchesPriority && matchesUnsolved;
-  });
+  const filteredProblems = useMemo(() => {
+    return problems.filter(p => {
+      const pId = p.id;
+      const numId = Number(pId);
+      const isSolved = solvedIds.has(pId) || (!isNaN(numId) && solvedIds.has(numId));
+      const matchesSearch     = p.title.toLowerCase().includes(search.toLowerCase());
+      const matchesTopic      = topic === "All" || p.topic === topic;
+      const matchesDifficulty = difficulty === "All" || p.difficulty === difficulty;
+      const matchesPriority   = priority === "All" || p.priority === priority;
+      const matchesUnsolved   = !showUnsolved || !isSolved;
+      return matchesSearch && matchesTopic && matchesDifficulty && matchesPriority && matchesUnsolved;
+    });
+  }, [problems, search, topic, difficulty, priority, showUnsolved, solvedIds]);
 
   return (
     <div>
@@ -213,14 +229,19 @@ function DsaPage() {
           <EmptyState />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredProblems.map(p => (
-              <ProblemCard
-                key={p.id}
-                problem={p}
-                isSolved={solvedIds.has(p.id)}
-                onToggleSolved={() => toggleSolved(p.id)}
-              />
-            ))}
+            {filteredProblems.map(p => {
+              const pId = p.id;
+              const numId = Number(pId);
+              const isSolved = solvedIds.has(pId) || (!isNaN(numId) && solvedIds.has(numId));
+              return (
+                <ProblemCard
+                  key={p.id}
+                  problem={p}
+                  isSolved={isSolved}
+                  onToggleSolved={() => toggleSolved(p.id)}
+                />
+              );
+            })}
           </div>
         )}
       </main>

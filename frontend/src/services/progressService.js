@@ -9,6 +9,18 @@ const getAuthHeaders = () => {
   };
 };
 
+/**
+ * Normalizes any progress item (number, numeric string, or object with problemId/resourceId)
+ * into a clean primitive ID (number if numeric, otherwise string).
+ */
+export const normalizeProgressId = (item) => {
+  if (item === null || item === undefined) return null;
+  const raw = (typeof item === "object") ? (item.problemId ?? item.resourceId ?? item.id) : item;
+  if (raw === null || raw === undefined) return null;
+  const num = Number(raw);
+  return !isNaN(num) && typeof raw !== "boolean" ? num : String(raw);
+};
+
 export const progressService = {
   /**
    * Get all progress for authenticated user grouped by resourceType
@@ -19,7 +31,18 @@ export const progressService = {
         method: "GET",
         headers: getAuthHeaders(),
       });
-      return await res.json();
+      const data = await res.json();
+      if (data && data.success && data.progress) {
+        // Ensure all arrays in progress map contain normalized primitive IDs
+        const normalized = {};
+        for (const [type, items] of Object.entries(data.progress)) {
+          normalized[type] = Array.isArray(items)
+            ? items.map(normalizeProgressId).filter((id) => id !== null)
+            : [];
+        }
+        return { ...data, progress: normalized };
+      }
+      return data;
     } catch (err) {
       console.error("progressService.getAllProgress error:", err);
       return { success: false, message: "Network error", progress: {} };
@@ -35,7 +58,14 @@ export const progressService = {
         method: "GET",
         headers: getAuthHeaders(),
       });
-      return await res.json();
+      const data = await res.json();
+      if (data && data.success && Array.isArray(data.progress)) {
+        const normalizedIds = data.progress
+          .map(normalizeProgressId)
+          .filter((id) => id !== null);
+        return { ...data, progress: normalizedIds };
+      }
+      return data;
     } catch (err) {
       console.error(`progressService.getProgress(${resourceType}) error:`, err);
       return { success: false, message: "Network error", progress: [] };
