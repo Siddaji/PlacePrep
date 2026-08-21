@@ -1,17 +1,26 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getOopModules } from "../services/oopService.js";
+import { getOopModules, getCachedOopModules } from "../services/oopService.js";
 import { progressService } from "../services/progressService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
 function OopPage() {
   const { isAuthenticated } = useAuth();
-  const [modules, setModules] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [modules, setModules] = useState(() => getCachedOopModules() || []);
+  const [loading, setLoading] = useState(() => !getCachedOopModules()?.length);
   const [searchQuery, setSearchQuery] = useState("");
   
   // Track open/collapsed modules. Map module.id -> boolean
-  const [expandedModules, setExpandedModules] = useState({});
+  const [expandedModules, setExpandedModules] = useState(() => {
+    const initial = {};
+    const cached = getCachedOopModules();
+    if (Array.isArray(cached)) {
+      cached.forEach((mod) => {
+        initial[mod.id] = true;
+      });
+    }
+    return initial;
+  });
 
   const SOLVED_STORAGE_KEY = "placeprep-oop-solved-topics";
 
@@ -43,12 +52,15 @@ function OopPage() {
     getOopModules()
       .then((data) => {
         setModules(data);
-        // Expand all modules by default
-        const initialExpanded = {};
-        data.forEach((mod) => {
-          initialExpanded[mod.id] = true;
+        setExpandedModules((prev) => {
+          const next = { ...prev };
+          data.forEach((mod) => {
+            if (next[mod.id] === undefined) {
+              next[mod.id] = true;
+            }
+          });
+          return next;
         });
-        setExpandedModules(initialExpanded);
         setLoading(false);
       })
       .catch((err) => {

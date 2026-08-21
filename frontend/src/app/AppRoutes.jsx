@@ -17,12 +17,14 @@ import VerifyEmailPage from "../pages/VerifyEmailPage.jsx";
 import ForgotPasswordPage from "../pages/ForgotPasswordPage.jsx";
 import ResetPasswordPage from "../pages/ResetPasswordPage.jsx";
 import NotFound from "../pages/NotFound.jsx";
+import ProgressPage from "../pages/ProgressPage.jsx";
 
 function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
+         <Route path="/progress" element={<ProgressPage />} />
         <Route path="/dsa" element={<DsaPage />} />
         <Route path="/system-design" element={<SystemDesignPage />} />
         <Route path="/system-design/:id" element={<SystemDesignDetailPage />} />

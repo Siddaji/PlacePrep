@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getOsModules } from "../services/osService.js";
+import { getOsModules, getCachedOsModules } from "../services/osService.js";
 import { progressService } from "../services/progressService.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -8,12 +8,21 @@ const SOLVED_STORAGE_KEY = "placeprep-os-solved-topics";
 
 function OsPage() {
   const { isAuthenticated } = useAuth();
-  const [modules, setModules] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [modules, setModules] = useState(() => getCachedOsModules() || []);
+  const [loading, setLoading] = useState(() => !getCachedOsModules()?.length);
   const [searchQuery, setSearchQuery] = useState("");
   
   // Track open/collapsed modules. Map module.id -> boolean
-  const [expandedModules, setExpandedModules] = useState({});
+  const [expandedModules, setExpandedModules] = useState(() => {
+    const initial = {};
+    const cached = getCachedOsModules();
+    if (Array.isArray(cached)) {
+      cached.forEach((mod) => {
+        initial[mod.id] = true;
+      });
+    }
+    return initial;
+  });
 
   // Solved topics state persisted in localStorage
   const [solvedTopicIds, setSolvedTopicIds] = useState(() => {
@@ -43,12 +52,15 @@ function OsPage() {
     getOsModules()
       .then((data) => {
         setModules(data);
-        // Expand all modules by default
-        const initialExpanded = {};
-        data.forEach((mod) => {
-          initialExpanded[mod.id] = true;
+        setExpandedModules((prev) => {
+          const next = { ...prev };
+          data.forEach((mod) => {
+            if (next[mod.id] === undefined) {
+              next[mod.id] = true;
+            }
+          });
+          return next;
         });
-        setExpandedModules(initialExpanded);
         setLoading(false);
       })
       .catch((err) => {

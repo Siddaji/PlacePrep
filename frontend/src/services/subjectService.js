@@ -1,8 +1,32 @@
-const BASE_URL = `${import.meta.env.VITE_API_URL}/api/subjects`;
+const API_BASE = import.meta.env.VITE_API_URL || "";
+const BASE_URL = `${API_BASE}/api/subjects`;
+
+const CACHE_KEY = "placeprep-subjects-data";
+
+export function getCachedSubjects() {
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    return cached ? JSON.parse(cached) : null;
+  } catch (err) {
+    console.warn("Failed to read cached subjects:", err);
+    return null;
+  }
+}
 
 export async function getSubjects() {
   const response = await fetch(BASE_URL);
-  if (!response.ok) throw new Error("Failed to fetch subjects");
-  return response.json();
-}
 
+  if (!response.ok) {
+    throw new Error("Failed to fetch subjects");
+  }
+
+  const data = await response.json();
+
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch (err) {
+    console.warn("Failed to cache subjects:", err);
+  }
+
+  return data;
+}

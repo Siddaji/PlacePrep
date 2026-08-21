@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { getProblems } from "../services/problemService.js";
-import { getCompanyProblemsData } from "../services/companyProblemService.js";
+import { getProblems, getCachedProblems } from "../services/problemService.js";
+import { getCompanyProblemsData, getCachedCompanyProblemsData } from "../services/companyProblemService.js";
 import CompanyTagsBackground from "../components/common/CompanyTagsBackground.jsx";
 
 const modules = [
@@ -108,21 +108,25 @@ function ModuleCard({ module, stats }) {
 }
 
 function HomePage() {
-  const [problemCount, setProblemCount] = useState(null);
-  const [companyProblemCount, setCompanyProblemCount] = useState(null);
+  const [problemCount, setProblemCount] = useState(() => getCachedProblems()?.length || null);
+  const [companyProblemCount, setCompanyProblemCount] = useState(() => getCachedCompanyProblemsData()?.problems?.length || null);
 
   useEffect(() => {
-    getProblems()
-      .then(data => setProblemCount(data.length))
-      .catch(() => setProblemCount(null));
+    if (!getCachedProblems()) {
+      getProblems()
+        .then(data => setProblemCount(data.length))
+        .catch(() => setProblemCount(null));
+    }
 
-    getCompanyProblemsData()
-      .then(data => {
-        if (data && data.problems) {
-          setCompanyProblemCount(data.problems.length);
-        }
-      })
-      .catch(() => setCompanyProblemCount(null));
+    if (!getCachedCompanyProblemsData()) {
+      getCompanyProblemsData()
+        .then(data => {
+          if (data && data.problems) {
+            setCompanyProblemCount(data.problems.length);
+          }
+        })
+        .catch(() => setCompanyProblemCount(null));
+    }
   }, []);
 
   function getStats(id) {
@@ -161,6 +165,12 @@ function HomePage() {
               >
                 Company-Wise DSA
               </Link>
+              <Link
+                to="/progress"
+                className="inline-flex items-center gap-1 rounded-full bg-zinc-900 hover:bg-zinc-800 border border-[#27272A] px-3.5 py-1.5 text-xs sm:text-sm font-medium text-emerald-400 transition-colors"
+              >
+                📊 My Progress
+              </Link>
             </div>
 
             <h1 className="mt-6 text-4xl sm:text-5xl lg:text-[50px] font-bold text-[#F5F5F5] leading-[1.12] tracking-tight">
@@ -186,7 +196,14 @@ function HomePage() {
                 to="/company-dsa"
                 className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A] text-black px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
               >
-                Company Wise DSA
+                Company DSA
+              </Link>
+
+              <Link
+                to="/oop"
+                className="inline-flex items-center gap-2 rounded-lg border bg-white border-[#27272A] text-black px-5 py-2.5 text-sm sm:text-base font-semibold transition-colors"
+              >
+                OOPs Practice
               </Link>
             </div>
 
