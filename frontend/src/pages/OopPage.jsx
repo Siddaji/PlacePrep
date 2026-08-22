@@ -1,8 +1,221 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { Link } from "react-router-dom";
 import { getOopModules, getCachedOopModules } from "../services/oopService.js";
 import { progressService } from "../services/progressService.js";
 import { useAuth } from "../context/AuthContext.jsx";
+
+const SOLVED_STORAGE_KEY = "placeprep-oop-solved-topics";
+
+const LEVEL_STYLES = {
+  Beginner: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  Easy: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  Intermediate: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  Medium: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  Advanced: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+  Hard: "bg-rose-500/10 text-rose-400 border border-rose-500/20",
+};
+
+function getLevelBadge(level) {
+  const normalized = level || "Beginner";
+  const styleClass = LEVEL_STYLES[normalized] || "bg-zinc-800 text-zinc-300 border-zinc-700";
+  return (
+    <span
+      className={`text-[11px] font-medium px-2.5 py-0.5 rounded border whitespace-nowrap ${styleClass}`}
+    >
+      {normalized}
+    </span>
+  );
+}
+
+/**
+ * Memoized Single Topic Row with Staggered Left-to-Right Slide-in Animation
+ */
+const OopTopicRow = memo(function OopTopicRow({ topic, isSolved, onToggleSolved, index }) {
+  return (
+    <div
+      style={{ animationDelay: `${index * 30}ms` }}
+      className={`animate-slide-in-row flex items-center justify-between px-4 sm:px-6 py-3.5 transition-colors ${
+        isSolved ? "bg-emerald-950/10 hover:bg-emerald-950/20" : "hover:bg-zinc-800/30"
+      }`}
+    >
+      {/* Column 1: Checkbox + Topic Name */}
+      <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-4">
+        {/* Solved Check Toggle Button */}
+        <button
+          type="button"
+          onClick={() => onToggleSolved(topic.id)}
+          className="shrink-0 p-0.5 rounded-full transition-transform active:scale-95 focus:outline-none focus-visible:ring-1 focus-visible:ring-emerald-500"
+          aria-label={isSolved ? "Mark as unsolved" : "Mark as solved"}
+        >
+          <div
+            className={`w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
+              isSolved
+                ? "bg-emerald-600 border-emerald-500 text-white shadow-xs"
+                : "border-zinc-700 bg-zinc-900 hover:border-zinc-500"
+            }`}
+          >
+            {isSolved && (
+              <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            )}
+          </div>
+        </button>
+
+        {/* Topic Title */}
+        <span
+          onClick={() => onToggleSolved(topic.id)}
+          className={`text-sm sm:text-[15px] font-medium leading-normal cursor-pointer transition-colors break-words ${
+            isSolved ? "text-zinc-500 line-through" : "text-zinc-200 hover:text-white"
+          }`}
+        >
+          {topic.title}
+        </span>
+      </div>
+
+      {/* Column 2: Level */}
+      <div className="w-28 sm:w-36 shrink-0 flex items-center">
+        {getLevelBadge(topic.difficulty)}
+      </div>
+
+      {/* Column 3: Action (Read Article) */}
+      <div className="w-32 sm:w-36 shrink-0 flex items-center justify-end">
+        {topic.articleUrl ? (
+          <a
+            href={topic.articleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 border border-zinc-700/60 transition-colors"
+          >
+            <span>Read Article</span>
+            <svg
+              className="w-3.5 h-3.5 text-zinc-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+              />
+            </svg>
+          </a>
+        ) : (
+          <span className="text-xs text-zinc-600 font-medium">—</span>
+        )}
+      </div>
+    </div>
+  );
+});
+
+/**
+ * Memoized Module Section Component displaying all topics in a clean table-style list
+ */
+const OopModuleSection = memo(function OopModuleSection({
+  module,
+  isExpanded,
+  onToggle,
+  solvedTopicIds,
+  onToggleSolved,
+}) {
+  const topics = module.topics || [];
+  const moduleTotal = topics.length;
+  const moduleSolved = topics.filter((t) => solvedTopicIds.has(t.id)).length;
+  const isCompleted = moduleSolved === moduleTotal && moduleTotal > 0;
+
+  return (
+    <div className="rounded-xl border border-[#27272A] bg-[#121212] overflow-hidden transition-colors">
+      {/* Module Header */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center justify-between px-4 sm:px-6 py-4 bg-[#121212] hover:bg-[#18181B] transition-colors duration-150 text-left focus:outline-none focus-visible:ring-1 focus-visible:ring-zinc-600"
+      >
+        <div className="flex items-center gap-3 min-w-0 pr-3">
+          <span className="text-base sm:text-lg font-bold text-zinc-100 tracking-tight truncate">
+            {module.title}
+          </span>
+          <span className="text-xs text-zinc-500 font-medium hidden sm:inline">
+            ({moduleTotal} {moduleTotal === 1 ? "Topic" : "Topics"})
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3.5 sm:gap-5 shrink-0">
+          <span
+            className={`font-mono text-sm sm:text-base font-semibold ${
+              isCompleted ? "text-emerald-400" : "text-zinc-300"
+            }`}
+          >
+            {moduleSolved}/{moduleTotal}
+          </span>
+
+          <div
+            className={`text-zinc-400 transition-transform duration-200 ease-in-out ${
+              isExpanded ? "rotate-180 text-zinc-100" : ""
+            }`}
+          >
+            <svg
+              className="w-4 h-4 sm:w-4.5 sm:h-4.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </div>
+        </div>
+      </button>
+
+      {/* Module Topics Table List */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-250 ease-in-out ${
+          isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <div className="border-t border-[#27272A] bg-[#0E0E11]/60">
+            {/* Table wrapper with smooth horizontal scroll container if screen is very small */}
+            <div className="w-full overflow-x-auto [scrollbar-width:thin] [scrollbar-color:#27272A_transparent]">
+              <div className="min-w-[520px] sm:min-w-0">
+                {/* Column Headers */}
+                <div className="flex items-center justify-between px-4 sm:px-6 py-2.5 bg-[#16161A]/80 border-b border-[#27272A] text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                  <div className="flex-1 min-w-0 pr-4">Topic</div>
+                  <div className="w-28 sm:w-36 shrink-0">Level</div>
+                  <div className="w-32 sm:w-36 shrink-0 text-right">Action</div>
+                </div>
+
+                {/* Topics Rows */}
+                {topics.length === 0 ? (
+                  <p className="text-xs sm:text-sm text-zinc-500 py-4 px-6 italic text-center">
+                    No topics found matching current search query.
+                  </p>
+                ) : (
+                  <div className="divide-y divide-[#27272A]/70">
+                    {topics.map((topic, index) => {
+                      const isSolved = solvedTopicIds.has(topic.id);
+                      return (
+                        <OopTopicRow
+                          key={topic.id}
+                          topic={topic}
+                          isSolved={isSolved}
+                          onToggleSolved={onToggleSolved}
+                          index={index}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
 
 function OopPage() {
   const { isAuthenticated } = useAuth();
@@ -21,8 +234,6 @@ function OopPage() {
     }
     return initial;
   });
-
-  const SOLVED_STORAGE_KEY = "placeprep-oop-solved-topics";
 
   // Solved topics state persisted in localStorage
   const [solvedTopicIds, setSolvedTopicIds] = useState(() => {
@@ -116,6 +327,18 @@ function OopPage() {
     }
   };
 
+  const expandAll = () => {
+    const allExpanded = {};
+    modules.forEach((mod) => {
+      allExpanded[mod.id] = true;
+    });
+    setExpandedModules(allExpanded);
+  };
+
+  const collapseAll = () => {
+    setExpandedModules({});
+  };
+
   // Flatten all topics for count and solved calculation
   const allTopics = useMemo(() => {
     return modules.flatMap((m) => m.topics || []);
@@ -137,9 +360,9 @@ function OopPage() {
 
     return modules
       .map((mod) => {
-        const matchingTopics = mod.topics.filter((topic) => {
+        const matchingTopics = (mod.topics || []).filter((topic) => {
           const matchTitle = topic.title.toLowerCase().includes(query);
-          const matchDiff = topic.difficulty.toLowerCase().includes(query);
+          const matchDiff = (topic.difficulty || "").toLowerCase().includes(query);
           return matchTitle || matchDiff;
         });
 
@@ -151,82 +374,57 @@ function OopPage() {
       .filter((mod) => mod.topics.length > 0);
   }, [modules, searchQuery]);
 
-  const getDifficultyBadge = (difficulty) => {
-    const diffLower = difficulty?.toLowerCase() || "";
-    if (diffLower.includes("beginner") || diffLower.includes("easy")) {
-      return (
-        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-950/80 text-emerald-300 border border-emerald-800/60">
-          Beginner
-        </span>
-      );
-    }
-    if (diffLower.includes("intermediate") || diffLower.includes("medium")) {
-      return (
-        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-amber-950/80 text-amber-300 border border-amber-800/60">
-          Intermediate
-        </span>
-      );
-    }
-    if (diffLower.includes("advanced") || diffLower.includes("hard")) {
-      return (
-        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-rose-950/80 text-rose-300 border border-rose-800/60">
-          Advanced
-        </span>
-      );
-    }
-    return (
-      <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-zinc-900 text-zinc-300 border border-zinc-800">
-        {difficulty}
-      </span>
-    );
-  };
-
   return (
     <div className="bg-black min-h-screen text-zinc-100 font-sans selection:bg-zinc-800 selection:text-white">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 py-8 sm:py-12">
-        
-        {/* Navigation Breadcrumb */}
-        <div className="mb-6 flex items-center justify-between">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-          >
-            ← Back to Home
-          </Link>
-          <span className="text-xs font-medium text-zinc-500">
-            OOP Specialization
-          </span>
-        </div>
+      {/* Page Header Banner */}
+      <div className="border-b border-[#27272A] bg-[#0B0B0B]">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 py-8 sm:py-10">
+          {/* Navigation Breadcrumb */}
+          <div className="flex items-center justify-between">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
+            >
+              ← Back to Home
+            </Link>
+            <span className="text-xs font-medium text-zinc-500">
+              Core Subjects • OOP
+            </span>
+          </div>
 
-        {/* Header */}
-        <div className="pb-8 border-b border-zinc-800">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+          {/* Title & Actions */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+              <h1 className="text-3xl sm:text-[36px] font-bold tracking-tight text-[#F5F5F5]">
                 Object-Oriented Programming Roadmap
               </h1>
-              <p className="mt-2.5 text-sm sm:text-base text-zinc-400 leading-relaxed max-w-2xl">
-                A structured reference covering core Object-Oriented concepts, design principles, and placement interview topics with verified GeeksforGeeks technical articles.
+              <p className="mt-2 text-sm sm:text-base text-zinc-300 max-w-2xl leading-relaxed">
+                Core Object-Oriented concepts, design principles, memory management, and placement interview topics with verified technical articles.
               </p>
             </div>
 
-            <Link
-              to="/oop/videos"
-              className="inline-flex items-center gap-2 shrink-0 rounded-md bg-white px-4 py-2 text-xs sm:text-sm font-semibold text-black hover:bg-zinc-200 transition-colors shadow-xs"
-            >
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              <span>Video Resources</span>
-            </Link>
+            <div className="flex flex-wrap items-center gap-3 shrink-0">
+              <Link
+                to="/oop/videos"
+                className="inline-flex items-center gap-2 rounded-lg bg-zinc-800/90 hover:bg-zinc-700/90 border border-zinc-700/60 px-4 py-2 text-xs sm:text-sm font-semibold text-zinc-200 hover:text-white transition-colors"
+              >
+                <svg className="w-3.5 h-3.5 fill-current text-rose-400" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                <span>Video Resources</span>
+              </Link>
+            </div>
           </div>
 
-          {/* Progress Bar & Summary */}
+          {/* Progress Strip */}
           {!loading && totalTopicsCount > 0 && (
-            <div className="mt-6 pt-6 border-t border-zinc-900/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="mt-6 pt-6 border-t border-[#27272A] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="text-xs sm:text-sm font-medium text-zinc-300">
-                  Overall Progress: <strong className="text-white font-semibold">{solvedCount}</strong> / {totalTopicsCount} Solved ({progressPercentage}%)
+                <span className="text-sm font-medium text-zinc-300">
+                  Overall Progress: <strong className="text-zinc-100 font-bold">{solvedCount}</strong> / {totalTopicsCount} Solved
+                </span>
+                <span className="text-xs font-mono text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20">
+                  {progressPercentage}%
                 </span>
               </div>
               <div className="w-full sm:w-48 h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800">
@@ -238,9 +436,12 @@ function OopPage() {
             </div>
           )}
         </div>
+      </div>
 
-        {/* Search Bar & Module Stats */}
-        <div className="py-6 border-b border-zinc-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      {/* Main Content Area */}
+      <main className="mx-auto max-w-5xl px-4 sm:px-6 py-8">
+        {/* Controls Bar: Search & Expand/Collapse */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div className="relative flex-1 max-w-md">
             <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-500">
               <svg className="h-4 w-4 fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2">
@@ -252,38 +453,44 @@ function OopPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search topics or concepts..."
-              className="w-full rounded-md border border-zinc-800 bg-zinc-900/80 pl-10 pr-10 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-colors"
+              placeholder="Search OOP topics or concepts..."
+              className="w-full rounded-lg border border-[#27272A] bg-[#121212] pl-10 pr-10 py-2 text-sm text-zinc-100 placeholder-zinc-500 focus:border-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-600 transition-colors"
             />
             {searchQuery && (
               <button
+                type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-500 hover:text-zinc-300 font-medium"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-zinc-200 font-medium"
               >
                 Clear
               </button>
             )}
           </div>
 
-          <div className="text-xs text-zinc-400 font-medium">
-            {totalTopicsCount} Topics in {modules.length} Modules
+          <div className="flex items-center justify-between sm:justify-end gap-3">
+            <span className="text-xs text-zinc-400 font-medium">
+              {totalTopicsCount} Topics in {modules.length} Modules
+            </span>
+            <div className="flex items-center gap-2">
+            </div>
           </div>
         </div>
 
-        {/* Modules List */}
+        {/* Modules Table List */}
         {loading ? (
-          <div className="py-12 space-y-4">
+          <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse space-y-2 py-4 border-b border-zinc-800">
-                <div className="h-6 bg-zinc-900 w-1/3 rounded" />
-                <div className="h-10 bg-zinc-950 w-full rounded" />
+              <div key={i} className="rounded-xl border border-[#27272A] bg-[#121212] p-5 h-16 animate-pulse flex items-center justify-between">
+                <div className="h-5 bg-zinc-800 rounded w-48" />
+                <div className="h-5 bg-zinc-800 rounded w-16" />
               </div>
             ))}
           </div>
         ) : filteredModules.length === 0 ? (
-          <div className="py-16 text-center text-zinc-500">
+          <div className="py-16 text-center text-zinc-500 rounded-xl border border-[#27272A] bg-[#121212]">
             <p className="text-sm sm:text-base font-medium">No topics found matching "{searchQuery}".</p>
             <button
+              type="button"
               onClick={() => setSearchQuery("")}
               className="mt-3 text-sm font-semibold text-zinc-300 underline hover:text-white"
             >
@@ -291,143 +498,26 @@ function OopPage() {
             </button>
           </div>
         ) : (
-          <div className="divide-y divide-zinc-800/80">
+          <div className="space-y-4">
             {filteredModules.map((module) => {
               const isExpanded = expandedModules[module.id] !== false;
-              const moduleSolvedCount = module.topics.filter((t) => solvedTopicIds.has(t.id)).length;
-
               return (
-                <div key={module.id} className="py-6">
-                  {/* Module Header Toggle */}
-                  <button
-                    onClick={() => toggleModule(module.id)}
-                    className="w-full flex items-center justify-between text-left py-2 group hover:text-zinc-300 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-xs text-zinc-500 font-medium">
-                        {isExpanded ? "▼" : "▶"}
-                      </span>
-                      <h2 className="text-base sm:text-lg font-semibold text-white tracking-tight">
-                        {module.title}
-                      </h2>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {moduleSolvedCount > 0 && (
-                        <span className="text-xs font-medium text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
-                          {moduleSolvedCount}/{module.topics.length} Done
-                        </span>
-                      )}
-                      <span className="text-xs font-medium text-zinc-500">
-                        {module.topics.length} {module.topics.length === 1 ? "topic" : "topics"}
-                      </span>
-                    </div>
-                  </button>
-
-                  {/* Module Topics List */}
-                  {isExpanded && (
-                    <div className="mt-3 space-y-1.5">
-                      {module.topics.map((topic) => {
-                        const isSolved = solvedTopicIds.has(topic.id);
-
-                        return (
-                          <div
-                            key={topic.id}
-                            className={`group flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 px-4 rounded-lg transition-colors border ${
-                              isSolved
-                                ? "bg-emerald-950/20 border-emerald-900/40 hover:border-emerald-800/60"
-                                : "bg-zinc-950/60 hover:bg-zinc-900 border-zinc-900 hover:border-zinc-800"
-                            }`}
-                          >
-                            {/* Topic Title & Difficulty */}
-                            <div className="flex flex-wrap items-center gap-2.5 min-w-0 flex-1">
-                              {/* Solved Checkbox Toggle */}
-                              <button
-                                onClick={() => toggleSolved(topic.id)}
-                                className={`flex items-center justify-center h-4 w-4 rounded border transition-colors shrink-0 ${
-                                  isSolved
-                                    ? "bg-emerald-500 border-emerald-400 text-black"
-                                    : "border-zinc-700 bg-zinc-900 hover:border-zinc-500 text-transparent"
-                                }`}
-                                title={isSolved ? "Mark as Unsolved" : "Mark as Solved"}
-                                aria-label={`Toggle solved status for ${topic.title}`}
-                              >
-                                <svg className="h-3 w-3 stroke-current stroke-[3]" fill="none" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                                </svg>
-                              </button>
-
-                              <span
-                                className={`text-sm sm:text-[15px] font-medium leading-normal cursor-pointer ${
-                                  isSolved
-                                    ? "text-zinc-400 line-through decoration-zinc-600"
-                                    : "text-zinc-200 group-hover:text-white"
-                                }`}
-                                onClick={() => toggleSolved(topic.id)}
-                              >
-                                {topic.title}
-                              </span>
-
-                              {getDifficultyBadge(topic.difficulty)}
-                            </div>
-
-                            {/* Actions: Solved Button & Verified Article Link */}
-                            <div className="flex items-center gap-3 text-xs font-medium text-zinc-400 shrink-0">
-                              {/* Solved Toggle Badge Button */}
-                              <button
-                                onClick={() => toggleSolved(topic.id)}
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                                  isSolved
-                                    ? "bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 hover:bg-emerald-900/60"
-                                    : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-zinc-200 hover:border-zinc-700"
-                                }`}
-                              >
-                                {isSolved ? (
-                                  <>
-                                    <svg className="w-3 h-3 text-emerald-400 fill-current" viewBox="0 0 24 24">
-                                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                                    </svg>
-                                    <span>Solved</span>
-                                  </>
-                                ) : (
-                                  <span>Mark Solved</span>
-                                )}
-                              </button>
-
-                              {/* Read Article Link */}
-                              {topic.articleUrl ? (
-                                <a
-                                  href={topic.articleUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-medium text-zinc-300 hover:text-white transition-colors group/link underline-offset-4 hover:underline"
-                                >
-                                  <span>Read Article</span>
-                                  <svg
-                                    className="w-3.5 h-3.5 text-zinc-500 group-hover/link:text-white transition-colors"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                    strokeWidth={2}
-                                  >
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-                                  </svg>
-                                </a>
-                              ) : null}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
+                <OopModuleSection
+                  key={module.id}
+                  module={module}
+                  isExpanded={isExpanded}
+                  onToggle={() => toggleModule(module.id)}
+                  solvedTopicIds={solvedTopicIds}
+                  onToggleSolved={toggleSolved}
+                />
               );
             })}
           </div>
         )}
-
-      </div>
+      </main>
     </div>
   );
 }
 
 export default OopPage;
+

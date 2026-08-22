@@ -42,19 +42,20 @@ function Navbar({ sidebarCollapsed, setSidebarCollapsed, mobileOpen, setMobileOp
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {mobileOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
+      {/* Mobile Overlay with smooth fade */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden transition-opacity duration-300 ease-in-out ${
+          mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={() => setMobileOpen(false)}
+        aria-hidden="true"
+      />
 
-      {/* Sidebar Container */}
+      {/* Sidebar Container with smooth hardware-accelerated transform slide */}
       <aside
-        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col border-r border-[#27272A] bg-[#0E0E11] overflow-hidden transition-[width,transform] duration-300 ease-in-out ${
-          mobileOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0"
-        } ${sidebarCollapsed ? "lg:w-20" : "lg:w-64"}`}
+        className={`fixed top-0 bottom-0 left-0 z-50 flex flex-col border-r border-[#27272A] bg-[#0E0E11] overflow-hidden will-change-transform transition-transform duration-300 ease-in-out ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 ${sidebarCollapsed ? "lg:w-20" : "lg:w-64"} w-64 lg:transition-[width,transform]`}
       >
         {/* Brand / Logo Header */}
         <div className="flex h-16 items-center justify-between px-4 border-b border-[#27272A] shrink-0 overflow-hidden">
